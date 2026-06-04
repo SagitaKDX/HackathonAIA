@@ -3,3 +3,5 @@ emoji
 numpy
 google-generativeai
 tqdm
+bs4
+selenium
