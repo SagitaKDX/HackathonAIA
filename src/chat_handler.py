@@ -36,41 +36,17 @@ TOOLS_SPEC = [
         "type": "function",
         "function": {
             "name": "count_reviews",
-            "description": "Đếm số lượng đánh giá khách hàng (reviews) thỏa mãn các điều kiện lọc (ví dụ: đếm số đánh giá xấu, đánh giá tốt, đánh giá về thức ăn/dịch vụ,...). Hãy LUÔN ƯU TIÊN dùng công cụ này khi người dùng hỏi các câu hỏi thống kê số lượng (ví dụ: 'có bao nhiêu...', 'đếm số lượng...', 'tần suất...') thay vì dùng get_reviews để tránh tải dữ liệu lớn làm chậm hệ thống.",
+            "description": "Đếm số đánh giá theo bộ lọc. Hãy luôn ưu tiên dùng công cụ này khi hỏi số lượng/thống kê thay vì dùng get_reviews.",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "branch_id": {
-                        "type": "string",
-                        "description": "Tên chi nhánh hoặc ID chi nhánh (ví dụ: 'Times City', 'Nguyễn Huệ', 'Lý Quốc Sư')."
-                    },
-                    "start_date": {
-                        "type": "string",
-                        "description": "Ngày bắt đầu lọc (định dạng ISO, ví dụ: '2026-05-01')."
-                    },
-                    "end_date": {
-                        "type": "string",
-                        "description": "Ngày kết thúc lọc (định dạng ISO, ví dụ: '2026-06-04')."
-                    },
-                    "period": {
-                        "type": "string",
-                        "enum": ["7d", "30d"],
-                        "description": "Khoảng thời gian cần lọc ('7d' hoặc '30d')."
-                    },
-                    "sentiment": {
-                        "type": "string",
-                        "enum": ["positive", "negative", "neutral", "all"],
-                        "description": "Cảm xúc cần lọc."
-                    },
-                    "category": {
-                        "type": "string",
-                        "enum": ["FOOD", "SERVICE", "AMBIENCE", "PRICE", "OTHER", "all"],
-                        "description": "Danh mục chính cần lọc."
-                    },
-                    "subcategory": {
-                        "type": "string",
-                        "description": "Danh mục con cụ thể cần lọc (ví dụ: 'SERVICE_WAIT_TIME')."
-                    }
+                    "branch_id": {"type": "string", "description": "Tên chi nhánh."},
+                    "start_date": {"type": "string", "description": "Ngày bắt đầu (ISO)."},
+                    "end_date": {"type": "string", "description": "Ngày kết thúc (ISO)."},
+                    "period": {"type": "string", "enum": ["7d", "30d"], "description": "Thời khoảng lọc."},
+                    "sentiment": {"type": "string", "enum": ["positive", "negative", "neutral", "all"], "description": "Cảm xúc."},
+                    "category": {"type": "string", "enum": ["FOOD", "SERVICE", "AMBIENCE", "PRICE", "OTHER", "all"], "description": "Danh mục."},
+                    "subcategory": {"type": "string", "description": "Mã danh mục con."}
                 }
             }
         }
@@ -79,40 +55,17 @@ TOOLS_SPEC = [
         "type": "function",
         "function": {
             "name": "get_reviews",
-            "description": "Lấy danh sách các đánh giá khách hàng (reviews) gốc CHI TIẾT đã được phân tích. KHÔNG SỬ DỤNG công cụ này chỉ để đếm số lượng hoặc thống kê số lượng đánh giá (hãy dùng count_reviews thay thế). Chỉ dùng khi thực sự cần đọc nội dung chi tiết hoặc danh sách các đánh giá.",
+            "description": "Lấy danh sách đánh giá chi tiết theo bộ lọc. Không dùng để đếm.",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "branch_id": {
-                        "type": "string",
-                        "description": "Tên chi nhánh hoặc ID chi nhánh (ví dụ: 'Times City', 'Nguyễn Huệ')."
-                    },
-                    "start_date": {
-                        "type": "string",
-                        "description": "Ngày bắt đầu lọc (định dạng ISO, ví dụ: '2026-05-01')."
-                    },
-                    "end_date": {
-                        "type": "string",
-                        "description": "Ngày kết thúc lọc (định dạng ISO, ví dụ: '2026-06-04')."
-                    },
-                    "sentiment": {
-                        "type": "string",
-                        "enum": ["positive", "negative", "neutral", "all"],
-                        "description": "Cảm xúc cần lọc."
-                    },
-                    "category": {
-                        "type": "string",
-                        "enum": ["FOOD", "SERVICE", "AMBIENCE", "PRICE", "OTHER", "all"],
-                        "description": "Danh mục chính cần lọc."
-                    },
-                    "subcategory": {
-                        "type": "string",
-                        "description": "Danh mục con cụ thể cần lọc (ví dụ: 'SERVICE_WAIT_TIME')."
-                    },
-                    "limit": {
-                        "type": "integer",
-                        "description": "Số lượng đánh giá tối đa trả về (mặc định 50)."
-                    }
+                    "branch_id": {"type": "string", "description": "Tên chi nhánh."},
+                    "start_date": {"type": "string", "description": "Ngày bắt đầu."},
+                    "end_date": {"type": "string", "description": "Ngày kết thúc."},
+                    "sentiment": {"type": "string", "enum": ["positive", "negative", "neutral", "all"], "description": "Cảm xúc."},
+                    "category": {"type": "string", "enum": ["FOOD", "SERVICE", "AMBIENCE", "PRICE", "OTHER", "all"], "description": "Danh mục."},
+                    "subcategory": {"type": "string", "description": "Mã danh mục con."},
+                    "limit": {"type": "integer", "description": "Số lượng tối đa."}
                 }
             }
         }
@@ -121,30 +74,15 @@ TOOLS_SPEC = [
         "type": "function",
         "function": {
             "name": "search_reviews",
-            "description": "Tìm kiếm đánh giá khách hàng bằng từ khóa trong nội dung hoặc bằng chứng (evidence).",
+            "description": "Tìm kiếm đánh giá theo từ khóa.",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "keyword": {
-                        "type": "string",
-                        "description": "Từ khóa tìm kiếm (ví dụ: 'nguội', 'đợi lâu', 'khuyến mãi')."
-                    },
-                    "branch_id": {
-                        "type": "string",
-                        "description": "Tên hoặc ID chi nhánh cần giới hạn tìm kiếm."
-                    },
-                    "start_date": {
-                        "type": "string",
-                        "description": "Ngày bắt đầu lọc."
-                    },
-                    "end_date": {
-                        "type": "string",
-                        "description": "Ngày kết thúc lọc."
-                    },
-                    "limit": {
-                        "type": "integer",
-                        "description": "Số lượng tối đa."
-                    }
+                    "keyword": {"type": "string", "description": "Từ khóa tìm kiếm."},
+                    "branch_id": {"type": "string", "description": "Tên chi nhánh."},
+                    "start_date": {"type": "string", "description": "Ngày bắt đầu."},
+                    "end_date": {"type": "string", "description": "Ngày kết thúc."},
+                    "limit": {"type": "integer", "description": "Số lượng tối đa."}
                 },
                 "required": ["keyword"]
             }
@@ -154,22 +92,13 @@ TOOLS_SPEC = [
         "type": "function",
         "function": {
             "name": "get_supporting_quotes",
-            "description": "Lấy danh sách các trích dẫn bằng chứng (quotes) cụ thể của khách hàng cho một vấn đề hoặc danh mục con.",
+            "description": "Lấy trích dẫn đánh giá làm bằng chứng cho một vấn đề.",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "issue_id": {
-                        "type": "string",
-                        "description": "Mã vấn đề cần trích dẫn (ví dụ: 'SERVICE_WAIT_TIME', 'FOOD_TEMPERATURE')."
-                    },
-                    "branch_id": {
-                        "type": "string",
-                        "description": "Tên hoặc ID chi nhánh."
-                    },
-                    "limit": {
-                        "type": "integer",
-                        "description": "Số lượng trích dẫn tối đa (mặc định 5)."
-                    }
+                    "issue_id": {"type": "string", "description": "Mã vấn đề/danh mục con."},
+                    "branch_id": {"type": "string", "description": "Tên chi nhánh."},
+                    "limit": {"type": "integer", "description": "Số lượng tối đa."}
                 },
                 "required": ["issue_id"]
             }
@@ -179,23 +108,13 @@ TOOLS_SPEC = [
         "type": "function",
         "function": {
             "name": "get_top_complaints",
-            "description": "Lấy danh sách các khiếu nại (phàn nàn) lớn nhất của khách hàng sắp xếp theo Impact Score.",
+            "description": "Lấy các phàn nàn lớn nhất xếp theo Impact Score.",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "branch_id": {
-                        "type": "string",
-                        "description": "Tên hoặc ID chi nhánh."
-                    },
-                    "period": {
-                        "type": "string",
-                        "enum": ["7d", "30d"],
-                        "description": "Khoảng thời gian phân tích ('7d' hoặc '30d')."
-                    },
-                    "limit": {
-                        "type": "integer",
-                        "description": "Số lượng khiếu nại tối đa cần lấy."
-                    }
+                    "branch_id": {"type": "string", "description": "Tên chi nhánh."},
+                    "period": {"type": "string", "enum": ["7d", "30d"], "description": "Thời khoảng."},
+                    "limit": {"type": "integer", "description": "Giới hạn số lượng."}
                 }
             }
         }
@@ -204,23 +123,13 @@ TOOLS_SPEC = [
         "type": "function",
         "function": {
             "name": "get_top_strengths",
-            "description": "Lấy danh sách các điểm mạnh (lời khen) lớn nhất của thương hiệu dựa trên các đánh giá tích cực.",
+            "description": "Lấy các điểm mạnh lớn nhất dựa trên đánh giá tích cực.",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "branch_id": {
-                        "type": "string",
-                        "description": "Tên hoặc ID chi nhánh."
-                    },
-                    "period": {
-                        "type": "string",
-                        "enum": ["7d", "30d"],
-                        "description": "Khoảng thời gian phân tích."
-                    },
-                    "limit": {
-                        "type": "integer",
-                        "description": "Số lượng tối đa."
-                    }
+                    "branch_id": {"type": "string", "description": "Tên chi nhánh."},
+                    "period": {"type": "string", "enum": ["7d", "30d"], "description": "Thời khoảng."},
+                    "limit": {"type": "integer", "description": "Giới hạn số lượng."}
                 }
             }
         }
@@ -229,23 +138,13 @@ TOOLS_SPEC = [
         "type": "function",
         "function": {
             "name": "detect_emerging_issues",
-            "description": "Phát hiện các vấn đề bất thường mới nổi (emerging issues) có lượt phàn nàn tăng đột biến trong tuần qua.",
+            "description": "Phát hiện các vấn đề tiêu cực mới nổi lên tăng đột biến.",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "branch_id": {
-                        "type": "string",
-                        "description": "Tên hoặc ID chi nhánh."
-                    },
-                    "period": {
-                        "type": "string",
-                        "enum": ["7d", "30d"],
-                        "description": "Khoảng thời gian phân tích."
-                    },
-                    "limit": {
-                        "type": "integer",
-                        "description": "Số lượng tối đa."
-                    }
+                    "branch_id": {"type": "string", "description": "Tên chi nhánh."},
+                    "period": {"type": "string", "enum": ["7d", "30d"], "description": "Thời khoảng."},
+                    "limit": {"type": "integer", "description": "Giới hạn số lượng."}
                 }
             }
         }
@@ -254,19 +153,12 @@ TOOLS_SPEC = [
         "type": "function",
         "function": {
             "name": "get_category_breakdown",
-            "description": "Lấy phân bổ tỷ trọng của các khía cạnh đánh giá theo các danh mục lớn (FOOD, SERVICE, AMBIENCE, PRICE, OTHER).",
+            "description": "Lấy tỷ lệ phân bổ đánh giá theo các danh mục lớn.",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "branch_id": {
-                        "type": "string",
-                        "description": "Tên hoặc ID chi nhánh."
-                    },
-                    "period": {
-                        "type": "string",
-                        "enum": ["7d", "30d"],
-                        "description": "Khoảng thời gian."
-                    }
+                    "branch_id": {"type": "string", "description": "Tên chi nhánh."},
+                    "period": {"type": "string", "enum": ["7d", "30d"], "description": "Thời khoảng."}
                 }
             }
         }
@@ -275,24 +167,13 @@ TOOLS_SPEC = [
         "type": "function",
         "function": {
             "name": "rank_branches",
-            "description": "So sánh và xếp hạng các chi nhánh nhà hàng dựa trên các tiêu chí (risk, rating, sentiment, complaint_volume, strength).",
+            "description": "So sánh, xếp hạng chi nhánh theo tiêu chí.",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "metric": {
-                        "type": "string",
-                        "enum": ["risk", "rating", "sentiment", "complaint_volume", "strength"],
-                        "description": "Tiêu chí xếp hạng."
-                    },
-                    "period": {
-                        "type": "string",
-                        "enum": ["7d", "30d"],
-                        "description": "Khoảng thời gian."
-                    },
-                    "limit": {
-                        "type": "integer",
-                        "description": "Số lượng chi nhánh tối đa trả về."
-                    }
+                    "metric": {"type": "string", "enum": ["risk", "rating", "sentiment", "complaint_volume", "strength"], "description": "Tiêu chí xếp hạng."},
+                    "period": {"type": "string", "enum": ["7d", "30d"], "description": "Thời khoảng."},
+                    "limit": {"type": "integer", "description": "Số lượng chi nhánh tối đa."}
                 }
             }
         }
@@ -301,23 +182,13 @@ TOOLS_SPEC = [
         "type": "function",
         "function": {
             "name": "prioritize_risks",
-            "description": "Đề xuất và xếp hạng các rủi ro vận hành cần ưu tiên xử lý trước dựa trên Impact Score.",
+            "description": "Đề xuất ưu tiên xử lý rủi ro dựa trên Impact Score.",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "branch_id": {
-                        "type": "string",
-                        "description": "Tên hoặc ID chi nhánh."
-                    },
-                    "period": {
-                        "type": "string",
-                        "enum": ["7d", "30d"],
-                        "description": "Khoảng thời gian."
-                    },
-                    "limit": {
-                        "type": "integer",
-                        "description": "Số lượng tối đa."
-                    }
+                    "branch_id": {"type": "string", "description": "Tên chi nhánh."},
+                    "period": {"type": "string", "enum": ["7d", "30d"], "description": "Thời khoảng."},
+                    "limit": {"type": "integer", "description": "Giới hạn số lượng."}
                 }
             }
         }
@@ -326,15 +197,11 @@ TOOLS_SPEC = [
         "type": "function",
         "function": {
             "name": "generate_weekly_summary",
-            "description": "Tạo báo cáo tổng hợp tình hình đánh giá tuần này bao gồm top rủi ro, điểm mạnh, chi nhánh tốt/tệ nhất và khuyến nghị hành động.",
+            "description": "Tạo báo cáo tổng hợp tuần bao gồm rủi ro, điểm mạnh và đề xuất hành động.",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "period": {
-                        "type": "string",
-                        "enum": ["7d", "30d"],
-                        "description": "Khoảng thời gian của báo cáo."
-                    }
+                    "period": {"type": "string", "enum": ["7d", "30d"], "description": "Thời khoảng."}
                 }
             }
         }
@@ -478,7 +345,7 @@ def handle_chat_request(handler):
     current_date = datetime.date.today().strftime("%Y-%m-%d")
     dynamic_prompt = SYSTEM_PROMPT.format(current_date=current_date)
     messages = [{"role": "system", "content": dynamic_prompt}]
-    for msg in history[-20:]:
+    for msg in history[-10:]:
         messages.append({
             "role": msg.get("role", "user"),
             "content": msg.get("content", "")
