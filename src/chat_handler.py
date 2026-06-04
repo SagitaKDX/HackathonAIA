@@ -412,7 +412,7 @@ def is_out_of_scope(text):
     """Detect if the query is out of scope for the restaurant customer reviews dashboard."""
     # List of keywords indicating general programming, scripting, mathematics, or unrelated tasks
     out_of_scope_keywords = [
-        "viết code", "viết script", "python script", "lập trình", "lập trình viên",
+        "viết code", "viết script", "python", "script", "lập trình", "lập trình viên",
         "viết chương trình", "mã nguồn", "source code", "java script", "javascript",
         "html", "css", "c++", "c#", "write code", "write a script", "write python",
         "giải toán", "bài toán", "math problem", "làm thơ", "viết bài văn", "tiểu luận",
