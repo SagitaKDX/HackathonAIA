@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Review Insight Agent - CRM Dashboard</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+  <!-- ApexCharts CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="brand">
+        <span class="brand-logo">✨</span>
+        <div class="brand-text">
+          <h1>InsightAgent</h1>
+          <span>CRM Operational Analytics</span>
+        </div>
+      </div>
+      <div class="nav-meta">
+        <div class="status-indicator">
+          <span class="pulse-dot"></span>
+          <span>Live Data Feed</span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Grid Layout -->
+  <main class="dashboard-container">
+    
+    <!-- Row 1: KPI Cards -->
+    <section class="kpi-grid">
+      
+      <div class="kpi-card" id="kpi-total-reviews">
+        <div class="kpi-header">
+          <span>Tổng số Review</span>
+          <span class="kpi-icon">📝</span>
+        </div>
+        <div class="kpi-value" id="val-total-reviews">-</div>
+        <div class="kpi-subtext" id="val-total-aspects">- khía cạnh được phân tách</div>
+      </div>
+
+      <div class="kpi-card" id="kpi-sentiment">
+        <div class="kpi-header">
+          <span>Chỉ số Hài lòng (Sentiment)</span>
+          <span class="kpi-icon">😊</span>
+        </div>
+        <div class="kpi-value" id="val-avg-sentiment">-</div>
+        <div class="kpi-progress-container">
+          <div class="kpi-progress-bar" id="sentiment-bar" style="width: 0%"></div>
+        </div>
+        <div class="kpi-subtext">Thang điểm từ -1.0 đến 1.0</div>
+      </div>
+
+      <div class="kpi-card" id="kpi-worst-branch">
+        <div class="kpi-header">
+          <span>Chi nhánh Rủi ro nhất</span>
+          <span class="kpi-icon">⚠️</span>
+        </div>
+        <div class="kpi-value warning-text" id="val-worst-branch">-</div>
+        <div class="kpi-subtext" id="val-worst-score">Risk Score: -</div>
+      </div>
+
+      <div class="kpi-card" id="kpi-best-branch">
+        <div class="kpi-header">
+          <span>Chi nhánh Hài lòng nhất</span>
+          <span class="kpi-icon">👑</span>
+        </div>
+        <div class="kpi-value success-text" id="val-best-branch">-</div>
+        <div class="kpi-subtext" id="val-best-score">Strength Score: -</div>
+      </div>
+
+    </section>
+
+    <!-- Row 2: Analytics & Charts -->
+    <section class="charts-grid">
+      
+      <!-- Chart 1: Time Series Sentiment & Volume -->
+      <div class="chart-card large">
+        <div class="card-header">
+          <h2>Xu hướng Thể tích & Sentiment Theo Thời gian</h2>
+          <span class="badge">30 Ngày Qua</span>
+        </div>
+        <div class="chart-wrapper">
+          <div id="chart-time-series"></div>
+        </div>
+      </div>
+
+      <!-- Chart 2: Category Breakdown -->
+      <div class="chart-card">
+        <div class="card-header">
+          <h2>Phân bổ Khía cạnh (Aspect Category)</h2>
+        </div>
+        <div class="chart-wrapper">
+          <div id="chart-categories"></div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Row 3: Insights & Actionables -->
+    <section class="insights-grid">
+      
+      <!-- Top Complaints -->
+      <div class="insight-card">
+        <div class="card-header">
+          <h2>Top Khiếu nại (Complaints) Lớn Nhất</h2>
+          <span class="badge danger-badge">Yêu Cầu Xử Lý</span>
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Vấn đề</th>
+                <th>Tần suất</th>
+                <th>Impact Score</th>
+                <th>Chi nhánh ảnh hưởng</th>
+              </tr>
+            </thead>
+            <tbody id="table-complaints-body">
+              <tr><td colspan="4" class="loading-cell">Đang tải dữ liệu...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Emerging Issues Alert Panel -->
+      <div class="insight-card">
+        <div class="card-header">
+          <h2>Dấu hiệu Bất thường Mới (Emerging Issues)</h2>
+          <span class="badge warning-badge">Cảnh báo An toàn / Vận hành</span>
+        </div>
+        <div class="emerging-list" id="emerging-container">
+          <div class="empty-state">Đang phân tích xu hướng tăng đột biến...</div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Row 4: Review Filtering and Feed -->
+    <section class="reviews-section">
+      
+      <div class="section-header-row">
+        <h2>Bảng Chi Tiết Phản Hồi & Phân Tích</h2>
+      </div>
+
+      <!-- Filtering Controls -->
+      <div class="filters-panel">
+        <div class="filter-group">
+          <label for="filter-branch">Chi nhánh</label>
+          <select id="filter-branch">
+            <option value="all">Tất cả chi nhánh</option>
+            <option value="branch_nguyen_hue">Nguyễn Huệ</option>
+            <option value="branch_times_city">Times City</option>
+            <option value="branch_aeon_mall_ha_dong">Aeon Mall Hà Đông</option>
+            <option value="branch_ly_quoc_su">Lý Quốc Sư</option>
+            <option value="branch_hang_bo">Hàng Bồ</option>
+            <option value="branch_vo_chi_cong">Võ Chí Công</option>
+            <option value="branch_cau_giay">Cầu Giấy</option>
+            <option value="branch_vincom">Vincom</option>
+            <option value="branch_kim_nguu">Kim Ngưu</option>
+            <option value="branch_truong_dinh">Trương Định</option>
+            <option value="branch_giai_phong">Giải Phóng</option>
+            <option value="branch_nguyen_chi_thanh">Nguyễn Chí Thanh</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filter-category">Danh mục chính</label>
+          <select id="filter-category">
+            <option value="all">Tất cả danh mục</option>
+            <option value="FOOD">FOOD (Đồ ăn)</option>
+            <option value="SERVICE">SERVICE (Phục vụ)</option>
+            <option value="AMBIENCE">AMBIENCE (Không gian)</option>
+            <option value="PRICE">PRICE (Giá cả)</option>
+            <option value="OTHER">OTHER (Khác)</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filter-sentiment">Cảm xúc</label>
+          <select id="filter-sentiment">
+            <option value="all">Tất cả cảm xúc</option>
+            <option value="positive">Tích cực (khen)</option>
+            <option value="negative">Tiêu cực (chê)</option>
+            <option value="neutral">Trung lập</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filter-source">Nguồn đánh giá</label>
+          <select id="filter-source">
+            <option value="all">Tất cả nguồn</option>
+            <option value="shopeefood">ShopeeFood</option>
+            <option value="grabfood">GrabFood</option>
+            <option value="google_maps">Google Maps</option>
+            <option value="facebook">Facebook</option>
+            <option value="internal_feedback">Nội bộ</option>
+          </select>
+        </div>
+
+        <div class="filter-group search-group">
+          <label for="search-input">Tìm kiếm bằng chứng</label>
+          <div class="search-wrapper">
+            <input type="text" id="search-input" placeholder="Nhập từ khóa hoặc bằng chứng...">
+            <button id="search-btn">Tìm</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reviews Feed List -->
+      <div class="reviews-feed" id="reviews-feed-container">
+        <div class="loading-state">Đang tải danh sách review...</div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination-container">
+        <button class="btn-page" id="btn-prev-page" disabled>Trở lại</button>
+        <span class="page-info" id="page-info-label">Trang 1</span>
+        <button class="btn-page" id="btn-next-page">Tiếp theo</button>
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 Customer Review Insight Agent Plan. Build for Hackathon Project.</p>
+  </footer>
+
+  <!-- Script logic -->
+  <script src="app.js"></script>
+</body>
+</html>
