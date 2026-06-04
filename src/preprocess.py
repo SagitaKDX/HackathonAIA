@@ -12,7 +12,7 @@ INPUT_PATH = "data/raw/data_spa.csv"
 OUTPUT_CSV_PATH = "data/processed/cleaned_reviews.csv"
 OUTPUT_JSON_PATH = "data/processed/cleaned_reviews.json"
 
-# List of branches from hackathon_plan.md and their match keywords
+# List of branches from spec/spec.md and their match keywords
 BRANCHES = [
     {"branch_id": "branch_nguyen_hue", "branch_name": "Nguyễn Huệ", "keywords": ["nguyễn huệ", "nguyen hue"]},
     {"branch_id": "branch_times_city", "branch_name": "Times City", "keywords": ["times city", "time city"]},

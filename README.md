@@ -36,7 +36,7 @@ HackathonAIA/
 │   ├── rule_analyzer.py        # Phân tích khía cạnh bằng bộ luật từ khóa (Keyword Taxonomy)
 │   ├── server.py               # HTTP Server chạy Dashboard & API Chat Proxy
 │   └── tools.py                # Định nghĩa các tool phân tích phục vụ cho AI Agent
-├── hackathon_plan.md           # Kế hoạch phát triển và tài liệu thiết kế hệ thống
+├── spec/spec.md                # Tài liệu đặc tả sản phẩm và thiết kế hệ thống (SPEC)
 ├── requirements.txt            # Danh sách thư viện Python cần thiết
 └── README.md                   # Tài liệu hướng dẫn sử dụng (tệp này)
 ```
@@ -128,7 +128,7 @@ Báo cáo sẽ được lưu trong thư mục `reports/`. Bạn có thể mở t
 
 ## 📊 Khung Đo lường Chỉ số (Scoring Framework)
 
-Hệ thống vận hành theo các công thức quy định tại tài liệu [hackathon_plan.md](file:///D:/Work/project/VINAI/HackathonAIA/hackathon_plan.md):
+Hệ thống vận hành theo các công thức quy định tại tài liệu [spec.md](file:///Users/minhlethanh/Documents/AIA/Hackathon/spec/spec.md):
 
 * **Chỉ số Tác động (Impact Score):**
   $$\text{Impact Score} = \text{Lượt nhắc (Mentions)} \times \text{Mức độ Nghiêm trọng Trung bình (Avg Severity)} \times \text{Độ tin cậy (Avg Confidence)}$$
