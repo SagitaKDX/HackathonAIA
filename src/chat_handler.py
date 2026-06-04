@@ -18,6 +18,7 @@ OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "qwen3.5:9b")
 # Tool name to function mapping
 TOOL_MAPPING = {
     "get_reviews": tools.get_reviews,
+    "count_reviews": tools.count_reviews,
     "search_reviews": tools.search_reviews,
     "get_supporting_quotes": tools.get_supporting_quotes,
     "get_top_complaints": tools.get_top_complaints,
@@ -34,8 +35,51 @@ TOOLS_SPEC = [
     {
         "type": "function",
         "function": {
+            "name": "count_reviews",
+            "description": "Đếm số lượng đánh giá khách hàng (reviews) thỏa mãn các điều kiện lọc (ví dụ: đếm số đánh giá xấu, đánh giá tốt, đánh giá về thức ăn/dịch vụ,...). Hãy LUÔN ƯU TIÊN dùng công cụ này khi người dùng hỏi các câu hỏi thống kê số lượng (ví dụ: 'có bao nhiêu...', 'đếm số lượng...', 'tần suất...') thay vì dùng get_reviews để tránh tải dữ liệu lớn làm chậm hệ thống.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "branch_id": {
+                        "type": "string",
+                        "description": "Tên chi nhánh hoặc ID chi nhánh (ví dụ: 'Times City', 'Nguyễn Huệ', 'Lý Quốc Sư')."
+                    },
+                    "start_date": {
+                        "type": "string",
+                        "description": "Ngày bắt đầu lọc (định dạng ISO, ví dụ: '2026-05-01')."
+                    },
+                    "end_date": {
+                        "type": "string",
+                        "description": "Ngày kết thúc lọc (định dạng ISO, ví dụ: '2026-06-04')."
+                    },
+                    "period": {
+                        "type": "string",
+                        "enum": ["7d", "30d"],
+                        "description": "Khoảng thời gian cần lọc ('7d' hoặc '30d')."
+                    },
+                    "sentiment": {
+                        "type": "string",
+                        "enum": ["positive", "negative", "neutral", "all"],
+                        "description": "Cảm xúc cần lọc."
+                    },
+                    "category": {
+                        "type": "string",
+                        "enum": ["FOOD", "SERVICE", "AMBIENCE", "PRICE", "OTHER", "all"],
+                        "description": "Danh mục chính cần lọc."
+                    },
+                    "subcategory": {
+                        "type": "string",
+                        "description": "Danh mục con cụ thể cần lọc (ví dụ: 'SERVICE_WAIT_TIME')."
+                    }
+                }
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "get_reviews",
-            "description": "Lấy danh sách các đánh giá khách hàng (reviews) gốc đã được phân tích theo bộ lọc chi nhánh, khoảng thời gian, loại cảm xúc, hoặc danh mục.",
+            "description": "Lấy danh sách các đánh giá khách hàng (reviews) gốc CHI TIẾT đã được phân tích. KHÔNG SỬ DỤNG công cụ này chỉ để đếm số lượng hoặc thống kê số lượng đánh giá (hãy dùng count_reviews thay thế). Chỉ dùng khi thực sự cần đọc nội dung chi tiết hoặc danh sách các đánh giá.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -303,9 +347,10 @@ Hãy luôn gọi các công cụ phù hợp để lấy số liệu thực tế 
 
 Nguyên tắc trả lời:
 1. Trả lời bằng tiếng Việt trừ khi người dùng hỏi bằng tiếng Anh.
-2. Trình bày số liệu rõ ràng, dễ hiểu (sử dụng danh sách dấu đầu dòng hoặc bảng biểu).
-3. Luôn dẫn ra các trích dẫn đánh giá thực tế (quotes) làm bằng chứng khi thảo luận về khiếu nại hay khen ngợi cụ thể.
-4. Đề xuất các hành động cải thiện cụ thể, thực tế và xếp theo mức độ nghiêm trọng hoặc Impact Score.
+2. Điều chỉnh mức độ chi tiết theo nhu cầu câu hỏi của người dùng:
+   - Nếu người dùng chỉ muốn biết số liệu khái quát hoặc đếm (ví dụ: 'có bao nhiêu đánh giá xấu'), hãy trả lời ngắn gọn số lượng và đưa ra nhận xét/insight khái quát, không cần liệt kê trích dẫn chi tiết hay đề xuất hành động trừ khi được hỏi.
+   - Nếu câu hỏi yêu cầu phân tích sâu hoặc báo cáo chi tiết, hãy trình bày số liệu cụ thể rõ ràng (dùng bảng hoặc danh sách), dẫn ra các trích dẫn (quotes) đánh giá thực tế làm bằng chứng, và đề xuất các hành động cải thiện cụ thể xếp theo mức độ nghiêm trọng.
+3. Hiệu năng & Tối ưu: Nếu câu hỏi yêu cầu so sánh nhiều mặt hoặc nhiều chi nhánh, hoặc cần cả rủi ro lẫn điểm mạnh, hãy gọi tất cả các công cụ cần thiết SONG SONG trong cùng một lượt gọi để giảm số lượt xử lý (ví dụ: gọi đồng thời rank_branches và get_top_complaints).
 """
 
 
@@ -337,6 +382,55 @@ def call_ollama(messages, tools=None, stream=False):
     except Exception as e:
         print(f"[OllamaCall] Error calling non-streaming Ollama: {e}")
         return {}
+
+
+def is_conversational_query(message):
+    """Detect if the message is a simple conversational greeting or general statement."""
+    msg_lower = message.lower().strip("?,.!")
+    greetings = {
+        "hi", "hello", "xin chào", "xin chao", "chào", "chao",
+        "bạn là ai", "ban la ai", "ai đó", "ai do",
+        "help", "trợ giúp", "tro giup", "hướng dẫn", "huong dan",
+        "tên bạn là gì", "ten ban la gi"
+    }
+    if msg_lower in greetings:
+        return True
+    words = msg_lower.split()
+    if len(words) <= 2 and any(w in msg_lower for w in ["cảm ơn", "cam on", "thanks", "thank", "ok", "oke"]):
+        return True
+    return False
+
+
+def _stream_final_response(handler, messages):
+    """Stream final text tokens from Ollama to the browser."""
+    try:
+        with call_ollama(messages, stream=True) as resp:
+            for line in resp:
+                if not line.strip():
+                    continue
+                try:
+                    chunk = json.loads(line.decode("utf-8"))
+                    token = chunk.get("message", {}).get("content", "")
+                    done = chunk.get("done", False)
+
+                    if token:
+                        _send_sse(handler, {"token": token, "done": False})
+
+                    if done:
+                        _send_sse(handler, {"token": "", "done": True})
+                        break
+                except json.JSONDecodeError:
+                    continue
+
+    except urllib.error.URLError as e:
+        error_msg = (
+            f"Không thể kết nối đến Ollama ({OLLAMA_URL}). "
+            f"Hãy chắc chắn Ollama đang chạy. Lỗi: {e}"
+        )
+        _try_send_sse_error(handler, error_msg)
+
+    except Exception as e:
+        _try_send_sse_error(handler, f"Lỗi server: {str(e)}")
 
 
 def handle_chat_request(handler):
@@ -375,6 +469,11 @@ def handle_chat_request(handler):
             "content": msg.get("content", "")
         })
     messages.append({"role": "user", "content": user_message})
+
+    # ── Optimize simple conversational queries ──
+    if is_conversational_query(user_message):
+        _stream_final_response(handler, messages)
+        return
 
     # ── Tool calling loop (max 5 iterations) ──
     has_called_tools = False
@@ -430,36 +529,7 @@ def handle_chat_request(handler):
             })
 
     # ── Final Response Generation (Streaming) ──
-    try:
-        # Call Ollama one last time with stream=True to render final answer
-        # Note: we omit tools here so it concentrates on formulating the text response
-        with call_ollama(messages, stream=True) as resp:
-            for line in resp:
-                if not line.strip():
-                    continue
-                try:
-                    chunk = json.loads(line.decode("utf-8"))
-                    token = chunk.get("message", {}).get("content", "")
-                    done = chunk.get("done", False)
-
-                    if token:
-                        _send_sse(handler, {"token": token, "done": False})
-
-                    if done:
-                        _send_sse(handler, {"token": "", "done": True})
-                        break
-                except json.JSONDecodeError:
-                    continue
-
-    except urllib.error.URLError as e:
-        error_msg = (
-            f"Không thể kết nối đến Ollama ({OLLAMA_URL}). "
-            f"Hãy chắc chắn Ollama đang chạy. Lỗi: {e}"
-        )
-        _try_send_sse_error(handler, error_msg)
-
-    except Exception as e:
-        _try_send_sse_error(handler, f"Lỗi server: {str(e)}")
+    _stream_final_response(handler, messages)
 
 
 # ──────────────────────────────────

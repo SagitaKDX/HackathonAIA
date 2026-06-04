@@ -18,16 +18,29 @@ DATA_FILE = os.path.abspath(
 )
 
 
+_cached_data = None
+_cached_mtime = None
+
+
 def load_review_data():
-    """Load analyzed reviews from the JSON data file."""
+    """Load analyzed reviews from the JSON data file with in-memory caching."""
+    global _cached_data, _cached_mtime
     if not os.path.exists(DATA_FILE):
         return []
     try:
+        current_mtime = os.path.getmtime(DATA_FILE)
+        if _cached_data is not None and _cached_mtime == current_mtime:
+            return _cached_data
+            
         with open(DATA_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
+            data = json.load(f)
+            
+        _cached_data = data
+        _cached_mtime = current_mtime
+        return data
     except Exception as e:
         print(f"[Tools] Error loading review data: {e}")
-        return []
+        return _cached_data if _cached_data is not None else []
 
 
 def parse_datetime(date_str):
@@ -134,21 +147,78 @@ def get_reviews(branch_id=None, start_date=None, end_date=None, sentiment=None, 
                 
         filtered.append({
             "review_id": r.get("review_id"),
-            "branch_id": r.get("branch_id"),
             "branch_name": r.get("branch_name"),
-            "source": r.get("source"),
             "sentiment": r.get("sentiment"),
             "main_category": r.get("main_category"),
             "subcategory": r.get("subcategory"),
             "severity": r.get("severity"),
-            "confidence": r.get("confidence"),
             "evidence": r.get("evidence"),
-            "content": r.get("content"),
             "created_at": r.get("created_at")
         })
         
     filtered.sort(key=lambda x: x.get("created_at", ""), reverse=True)
     return filtered[:limit]
+
+
+def count_reviews(branch_id=None, start_date=None, end_date=None, period=None, sentiment=None, category=None, subcategory=None):
+    """
+    Đếm số lượng đánh giá khách hàng (reviews) thỏa mãn các điều kiện lọc.
+    
+    Args:
+        branch_id (str): Tên hoặc ID chi nhánh (ví dụ: 'Times City', 'Lý Quốc Sư').
+        start_date (str): Ngày bắt đầu lọc (định dạng ISO, ví dụ: '2026-05-01').
+        end_date (str): Ngày kết thúc lọc (định dạng ISO, ví dụ: '2026-06-04').
+        period (str): Khoảng thời gian tự động lọc ('7d' hoặc '30d') nếu không truyền start_date/end_date.
+        sentiment (str): 'positive' (tích cực), 'negative' (tiêu cực), 'neutral' (trung lập), hoặc 'all'.
+        category (str): Danh mục chính (FOOD, SERVICE, AMBIENCE, PRICE, OTHER, hoặc 'all').
+        subcategory (str): Danh mục con cụ thể.
+    """
+    records = load_review_data()
+    
+    s_date = parse_datetime(start_date) if start_date else None
+    e_date = parse_datetime(end_date) if end_date else None
+        
+    if not s_date and not e_date and period:
+        s_date, e_date, _, _ = get_period_dates(period)
+        
+    count = 0
+    for r in records:
+        # Branch
+        if branch_id and branch_id != "all":
+            if r.get("branch_id") != branch_id and r.get("branch_name") != branch_id:
+                continue
+                
+        # Date
+        r_date = parse_datetime(r.get("created_at"))
+        if s_date and r_date < s_date:
+            continue
+        if e_date and r_date > e_date:
+            continue
+            
+        # Sentiment
+        if sentiment and sentiment != "all":
+            r_sent = r.get("sentiment", 0)
+            if sentiment == "positive" and r_sent <= 0:
+                continue
+            elif sentiment == "negative" and r_sent >= 0:
+                continue
+            elif sentiment == "neutral" and r_sent != 0:
+                continue
+                
+        # Category
+        if category and category != "all":
+            if r.get("main_category") != category:
+                continue
+                
+        # Subcategory
+        if subcategory and subcategory != "all":
+            if r.get("subcategory") != subcategory:
+                continue
+                
+        count += 1
+        
+    return {"count": count}
+
 
 
 def search_reviews(keyword, branch_id=None, start_date=None, end_date=None, limit=50):
@@ -189,7 +259,6 @@ def search_reviews(keyword, branch_id=None, start_date=None, end_date=None, limi
                 "review_id": r.get("review_id"),
                 "branch_name": r.get("branch_name"),
                 "evidence": r.get("evidence"),
-                "content": r.get("content"),
                 "sentiment": r.get("sentiment"),
                 "created_at": r.get("created_at")
             })
