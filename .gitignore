@@ -1,3 +1,4 @@
 .venv
 apikey.txt
 data
+__pycache__
