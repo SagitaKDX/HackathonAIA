@@ -651,6 +651,93 @@ def rank_branches(metric="risk", period="7d", limit=10):
         
     return branch_stats[:limit]
 
+def get_operational_health_summary(branch_id=None, start_date=None, end_date=None, period=None):
+    """
+    Tính toán các chỉ số sức khỏe vận hành vĩ mô cho một hoặc tất cả chi nhánh.
+    Trả về: Tổng số review, True Negative Rate (%), Average Severity, và số lượng sự cố khẩn cấp (Severity 4-5).
+    """
+    records = load_review_data()
+    
+    s_date = parse_datetime(start_date) if start_date else None
+    e_date = parse_datetime(end_date) if end_date else None
+    
+    if not s_date and not e_date and period:
+        s_date, e_date, _, _ = get_period_dates(period)
+        
+    filtered = []
+    for r in records:
+        # Branch
+        if branch_id and branch_id != "all":
+            b_id_lower = str(branch_id).lower().strip()
+            r_id = str(r.get("branch_id", "")).lower().strip()
+            r_name = str(r.get("branch_name", "")).lower().strip()
+            if r_id != b_id_lower and r_name != b_id_lower:
+                def _strip_accents(s):
+                    accents = {
+                        "áàảãạăắằẳẵặâấầẩẫậ": "a",
+                        "éèẻẽẹêếềểễệ": "e",
+                        "íìỉĩị": "i",
+                        "óòỏõọôốồổỗộơớờởỡợ": "o",
+                        "úùủũụưứừửữự": "u",
+                        "ýỳỷỹỵ": "y",
+                        "đ": "d"
+                    }
+                    s_new = ""
+                    for char in s:
+                        matched = False
+                        for group, replacement in accents.items():
+                            if char in group:
+                                s_new += replacement
+                                matched = True
+                                break
+                        if not matched:
+                            s_new += char
+                    return s_new
+                b_clean = _strip_accents(b_id_lower).replace("branch_", "").replace("_", "").replace(" ", "")
+                r_name_clean = _strip_accents(r_name).replace("branch_", "").replace("_", "").replace(" ", "")
+                r_id_clean = _strip_accents(r_id).replace("branch_", "").replace("_", "").replace(" ", "")
+                if r_id_clean != b_clean and r_name_clean != b_clean:
+                    continue
+                    
+        # Date
+        r_date = parse_datetime(r.get("created_at"))
+        if s_date and r_date < s_date:
+            continue
+        if e_date and r_date > e_date:
+            continue
+            
+        filtered.append(r)
+        
+    # Tính toán các chỉ số vĩ mô
+    unique_reviews = len(set(r.get("review_id") for r in filtered if r.get("review_id")))
+    total_aspects = len(filtered)
+    
+    # Tính True Negative Rate (%)
+    # TNR = (TN / Actual Negatives) * 100
+    # Actual Negatives (nhãn thực tế là tiêu cực) có rating == 0
+    # TN (dự đoán đúng tiêu cực) có rating == 0 và sentiment < 0
+    actual_neg_count = sum(1 for r in filtered if r.get("rating") == 0)
+    if actual_neg_count > 0:
+        tn_count = sum(1 for r in filtered if r.get("rating") == 0 and r.get("sentiment", 0) < 0)
+        tnr_val = (tn_count / actual_neg_count) * 100
+    else:
+        tnr_val = 100.0  # Nếu không có review tiêu cực nào thì xem như 100%
+        
+    # Tính Average Severity
+    severities = [r.get("severity") for r in filtered if r.get("severity") is not None]
+    avg_severity = sum(severities) / len(severities) if severities else 0.0
+    
+    # Số lượng sự cố khẩn cấp (Severity từ 4 đến 5)
+    critical_incidents = sum(1 for r in filtered if r.get("severity", 0) >= 4)
+    
+    return {
+        "local": branch_id if branch_id else "All Branches",
+        "total_reviews": unique_reviews,
+        "total_aspect_records": total_aspects,
+        "true_negative_rate_pct": round(tnr_val, 2),
+        "average_severity": round(avg_severity, 2),
+        "critical_incidents_count": critical_incidents
+    }
 
 # ──────────────────────────────────────────────────────────────────────
 # LEVEL 3 — Executive Tools

@@ -38,10 +38,27 @@ TOOL_MAPPING = {
     "rank_branches": tools.rank_branches,
     "prioritize_risks": tools.prioritize_risks,
     "generate_weekly_summary": tools.generate_weekly_summary,
+    "get_operational_health_summary": tools.get_operational_health_summary,
 }
 
 # Tools specifications list in Ollama format
 TOOLS_SPEC = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_operational_health_summary",
+            "description": "Tính toán và trả về các chỉ số sức khỏe vận hành vĩ mô cho một hoặc tất cả chi nhánh: Tổng số reviews, tổng khía cạnh, tỷ lệ phàn nàn thực tế TNR (True Negative Rate), mức độ nghiêm trọng trung bình (average severity), và số lượng sự cố khẩn cấp (severity >= 4).",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "branch_id": {"type": "string", "description": "Tên hoặc ID chi nhánh (ví dụ: 'Times City', 'Lý Quốc Sư')."},
+                    "start_date": {"type": "string", "description": "Ngày bắt đầu lọc (ISO, ví dụ: '2026-05-01')."},
+                    "end_date": {"type": "string", "description": "Ngày kết thúc lọc (ISO, ví dụ: '2026-06-04')."},
+                    "period": {"type": "string", "enum": ["7d", "30d"], "description": "Thời khoảng tự động lọc ('7d' hoặc '30d') nếu không truyền start_date/end_date."}
+                }
+            }
+        }
+    },
     {
         "type": "function",
         "function": {
