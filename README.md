@@ -10,7 +10,7 @@ Hệ thống Operational Agent & Dashboard phân tích đánh giá khách hàng 
 | :--- | :--- | :--- |
 | **2A202600872** | **Lê Thanh Minh** | **Nhóm trưởng**: Thiết kế hệ thống, Lập trình Backend (server.py), Phát triển giao diện Dashboard (Frontend UI), Xây dựng các Tools phân tích và logic Agent (Tool-Calling, dynamic tab loader). |
 | **2A202600904** | **Nguyễn Văn Minh** | Hỗ trợ chuẩn bị dữ liệu mẫu (mock data) và thiết kế slide thuyết trình demo. |
-| **2A202600636** | **Nguyễn Lê Thanh Điệp** | Hỗ trợ chuẩn bị và tìm kiếm dữ liệu; Tinh chỉnh Prompt cho AI Agent. |
+| **2A202600636** | **Nguyễn Lê Thanh Điệp** | Hỗ trợ chuẩn bị và tìm kiếm dữ liệu; Tinh chỉnh Prompt cho AI Agent. Hỗ trợ xây dựng khung các tools (viết code 6 tools cơ bản để tương tác test thử với dữ liệu thô file csv trước). |
 | **2A202600585** | **Đỗ Minh Phúc** | Hỗ trợ chuẩn bị và tìm kiếm dữ liệu; Chỉnh sửa và tối ưu cấu hình sử dụng nhà cung cấp OpenAI (OpenAI provider). |
 | **2A202600826** | **Phí Đình Mạnh** | Hỗ trợ chuẩn bị tài liệu dự án, thuyết trình và tài liệu hóa hệ thống (Documentation). |
 
