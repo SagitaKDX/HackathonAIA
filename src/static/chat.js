@@ -59,6 +59,20 @@ function initChat() {
     clearBtn.addEventListener("click", clearChat);
   }
 
+  // Provider Select listener
+  const providerSelect = document.getElementById("chat-provider-select");
+  const modelStatus = document.getElementById("chat-model-status");
+  if (providerSelect && modelStatus) {
+    providerSelect.addEventListener("change", (e) => {
+      const provider = e.target.value;
+      if (provider === "openai") {
+        modelStatus.textContent = "GPT-4o-mini · OpenAI API";
+      } else {
+        modelStatus.textContent = "Qwen 2.5 · Ollama Local";
+      }
+    });
+  }
+
   // Suggested prompt chips
   const chips = document.querySelectorAll(".chat-suggestion-chip");
   chips.forEach((chip) => {
@@ -106,13 +120,17 @@ async function sendChatMessage() {
   const aiMessageEl = createAIMessageElement();
   const bubbleEl = aiMessageEl.querySelector(".chat-msg-bubble");
 
+  const providerSelectElem = document.getElementById("chat-provider-select");
+  const provider = providerSelectElem ? providerSelectElem.value : "ollama";
+
   try {
     const response = await fetch(API_CHAT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         message: message,
-        history: chatHistory.slice(0, -1) // Exclude current message (already sent in body)
+        history: chatHistory.slice(0, -1), // Exclude current message (already sent in body)
+        provider: provider
       }),
     });
 

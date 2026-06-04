@@ -11,11 +11,19 @@ import urllib.request
 import urllib.error
 import tools
 
+# LLM Provider Configuration
+LLM_PROVIDER = os.environ.get("LLM_PROVIDER", "ollama").lower()
+
 # Ollama Configuration
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434")
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "qwen3.5:9b")
 OLLAMA_TEMPERATURE = float(os.environ.get("OLLAMA_TEMPERATURE", "0.0"))
 OLLAMA_NUM_CTX = int(os.environ.get("OLLAMA_NUM_CTX", "8192"))
+
+# OpenAI Configuration
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
+OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
+OPENAI_API_URL = os.environ.get("OPENAI_API_URL", "https://api.openai.com/v1")
 
 # Tool name to function mapping
 TOOL_MAPPING = {
@@ -242,37 +250,97 @@ Nguyên tắc nghiêm ngặt (Guardrails):
 """
 
 
-def call_ollama(messages, tools=None, stream=False):
-    """Make an HTTP POST request to Ollama chat endpoint."""
-    payload = {
-        "model": OLLAMA_MODEL,
-        "messages": messages,
-        "stream": stream,
-        "options": {
-            "temperature": OLLAMA_TEMPERATURE,
-            "num_ctx": OLLAMA_NUM_CTX
+def call_llm(messages, tools=None, stream=False, provider=None):
+    """Make an HTTP POST request to the configured LLM provider (Ollama or OpenAI)."""
+    selected_provider = provider if provider else LLM_PROVIDER
+    if selected_provider == "openai":
+        if not OPENAI_API_KEY:
+            raise ValueError("OPENAI_API_KEY chưa được cấu hình. Vui lòng thiết lập biến môi trường này khi chạy server.")
+        payload = {
+            "model": OPENAI_MODEL,
+            "messages": messages,
+            "stream": stream,
+            "temperature": OLLAMA_TEMPERATURE
         }
-    }
-    if tools:
-        payload["tools"] = tools
+        if tools:
+            payload["tools"] = tools
+            
+        req = urllib.request.Request(
+            f"{OPENAI_API_URL}/chat/completions",
+            data=json.dumps(payload).encode("utf-8"),
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {OPENAI_API_KEY}"
+            },
+            method="POST"
+        )
+    else:  # Default: ollama
+        payload = {
+            "model": OLLAMA_MODEL,
+            "messages": messages,
+            "stream": stream,
+            "options": {
+                "temperature": OLLAMA_TEMPERATURE,
+                "num_ctx": OLLAMA_NUM_CTX
+            }
+        }
+        if tools:
+            payload["tools"] = tools
 
-    req = urllib.request.Request(
-        f"{OLLAMA_URL}/api/chat",
-        data=json.dumps(payload).encode("utf-8"),
-        headers={"Content-Type": "application/json"},
-        method="POST"
-    )
-    # If streaming, return the open response stream
+        req = urllib.request.Request(
+            f"{OLLAMA_URL}/api/chat",
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST"
+        )
+        
     if stream:
         return urllib.request.urlopen(req, timeout=120)
-    
-    # Non-streaming, return parsed JSON
+        
     try:
         with urllib.request.urlopen(req, timeout=120) as resp:
             body = resp.read()
-            return json.loads(body.decode("utf-8"))
+            raw_res = json.loads(body.decode("utf-8"))
+            
+            # Map OpenAI response format to Ollama message output format
+            if selected_provider == "openai":
+                choices = raw_res.get("choices", [])
+                if not choices:
+                    return {}
+                choice = choices[0]
+                openai_msg = choice.get("message", {})
+                
+                mapped_msg = {
+                    "role": "assistant",
+                    "content": openai_msg.get("content") or ""
+                }
+                
+                # Check for tool calls
+                openai_tool_calls = openai_msg.get("tool_calls", [])
+                if openai_tool_calls:
+                    mapped_tool_calls = []
+                    for tc in openai_tool_calls:
+                        func_info = tc.get("function", {})
+                        args_raw = func_info.get("arguments", "{}")
+                        try:
+                            args_parsed = json.loads(args_raw)
+                        except Exception:
+                            args_parsed = {}
+                        mapped_tool_calls.append({
+                            "id": tc.get("id"),
+                            "type": "function",
+                            "function": {
+                                "name": func_info.get("name"),
+                                "arguments": args_parsed
+                            }
+                        })
+                    mapped_msg["tool_calls"] = mapped_tool_calls
+                
+                return {"message": mapped_msg}
+            else:
+                return raw_res
     except Exception as e:
-        print(f"[OllamaCall] Error calling non-streaming Ollama: {e}")
+        print(f"[LLMCall] Error calling non-streaming {selected_provider}: {e}")
         return {}
 
 
@@ -293,31 +361,50 @@ def is_conversational_query(message):
     return False
 
 
-def _stream_final_response(handler, messages):
-    """Stream final text tokens from Ollama to the browser."""
+def _stream_final_response(handler, messages, provider=None):
+    """Stream final text tokens from LLM to the browser."""
+    selected_provider = provider if provider else LLM_PROVIDER
     try:
-        with call_ollama(messages, stream=True) as resp:
-            for line in resp:
-                if not line.strip():
+        with call_llm(messages, stream=True, provider=selected_provider) as resp:
+            for line_bytes in resp:
+                line = line_bytes.decode("utf-8").strip()
+                if not line:
                     continue
-                try:
-                    chunk = json.loads(line.decode("utf-8"))
-                    token = chunk.get("message", {}).get("content", "")
-                    done = chunk.get("done", False)
+                
+                if selected_provider == "openai":
+                    if line.startswith("data: "):
+                        data_str = line[6:].strip()
+                        if data_str == "[DONE]":
+                            _send_sse(handler, {"token": "", "done": True})
+                            break
+                        try:
+                            chunk = json.loads(data_str)
+                            choices = chunk.get("choices", [])
+                            if choices:
+                                token = choices[0].get("delta", {}).get("content", "")
+                                if token:
+                                    _send_sse(handler, {"token": token, "done": False})
+                        except json.JSONDecodeError:
+                            continue
+                else:  # Default: ollama
+                    try:
+                        chunk = json.loads(line)
+                        token = chunk.get("message", {}).get("content", "")
+                        done = chunk.get("done", False)
 
-                    if token:
-                        _send_sse(handler, {"token": token, "done": False})
+                        if token:
+                            _send_sse(handler, {"token": token, "done": False})
 
-                    if done:
-                        _send_sse(handler, {"token": "", "done": True})
-                        break
-                except json.JSONDecodeError:
-                    continue
+                        if done:
+                            _send_sse(handler, {"token": "", "done": True})
+                            break
+                    except json.JSONDecodeError:
+                        continue
 
     except urllib.error.URLError as e:
         error_msg = (
-            f"Không thể kết nối đến Ollama ({OLLAMA_URL}). "
-            f"Hãy chắc chắn Ollama đang chạy. Lỗi: {e}"
+            f"Không thể kết nối đến {selected_provider.upper()}. "
+            f"Hãy chắc chắn dịch vụ đang chạy. Lỗi: {e}"
         )
         _try_send_sse_error(handler, error_msg)
 
@@ -340,6 +427,9 @@ def handle_chat_request(handler):
 
     user_message = payload.get("message", "").strip()
     history = payload.get("history", [])
+    provider = payload.get("provider", "").strip().lower()
+    if provider not in ["ollama", "openai"]:
+        provider = LLM_PROVIDER
 
     if not user_message:
         _send_json(handler, {"error": "Message is required"}, status=400)
@@ -368,15 +458,15 @@ def handle_chat_request(handler):
 
     # ── Optimize simple conversational queries ──
     if is_conversational_query(user_message):
-        _stream_final_response(handler, messages)
+        _stream_final_response(handler, messages, provider=provider)
         return
 
     # ── Tool calling loop (max 5 iterations) ──
     has_called_tools = False
     
     for loop_idx in range(5):
-        # Call Ollama non-streaming to inspect if it wants to run tool calls
-        response = call_ollama(messages, tools=TOOLS_SPEC, stream=False)
+        # Call LLM non-streaming to inspect if it wants to run tool calls
+        response = call_llm(messages, tools=TOOLS_SPEC, stream=False, provider=provider)
         message = response.get("message", {})
         tool_calls = message.get("tool_calls", [])
 
@@ -421,14 +511,17 @@ def handle_chat_request(handler):
                 result = {"error": f"Công cụ '{name}' không tồn tại."}
 
             # Append tool output to history
-            messages.append({
+            tool_msg = {
                 "role": "tool",
                 "name": name,
                 "content": json.dumps(result, ensure_ascii=False)
-            })
+            }
+            if tc.get("id"):
+                tool_msg["tool_call_id"] = tc.get("id")
+            messages.append(tool_msg)
 
     # ── Final Response Generation (Streaming) ──
-    _stream_final_response(handler, messages)
+    _stream_final_response(handler, messages, provider=provider)
 
 
 def _stream_text_response(handler, text, chunk_size=8, delay_sec=0.001):
