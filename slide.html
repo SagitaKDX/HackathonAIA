@@ -1,0 +1,1194 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Operations Copilot – Group A2_E402</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --cream:    #F7F4EF;
+      --paper:    #FDFCFA;
+      --ink:      #1A1612;
+      --ink-soft: #4A453E;
+      --ink-mute: #8A837A;
+      --accent:   #C84B31;    /* warm terracotta red */
+      --accent2:  #2A6B5A;    /* deep forest green */
+      --accent3:  #D4883F;    /* amber/ochre */
+      --blue:     #2B5EA7;
+      --divider:  #DDD8D0;
+      --tag-bg:   #EDE9E3;
+      --red-light:#FDF0EE;
+      --green-light:#EDF5F2;
+      --amber-light:#FDF5EA;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    .reveal {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+    }
+
+    .reveal .slides section {
+      text-align: left;
+      padding: 48px 56px;
+      height: 100%;
+    }
+
+    /* Typography */
+    .reveal h1, .reveal h2, .reveal h3 {
+      font-family: 'DM Serif Display', serif;
+      font-weight: 400;
+      color: var(--ink);
+      text-transform: none;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+
+    .reveal h1 { font-size: 2.6rem; }
+    .reveal h2 { font-size: 1.8rem; }
+    .reveal h3 { font-size: 1.2rem; }
+    .reveal p  { font-size: 0.9rem; line-height: 1.7; color: var(--ink-soft); }
+
+    .reveal .slides { background: var(--cream); }
+
+    /* Slide layout helpers */
+    .grid-2  { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .grid-3  { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+    .grid-4  { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; }
+    .grid-12 { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; }
+
+    /* Utility */
+    .eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+      margin-bottom: 10px;
+    }
+
+    .accent-red   { color: var(--accent); }
+    .accent-green { color: var(--accent2); }
+    .accent-amber { color: var(--accent3); }
+    .accent-blue  { color: var(--blue); }
+
+    .divider {
+      border: none;
+      border-top: 1.5px solid var(--divider);
+      margin: 20px 0;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--divider);
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .card-red    { border-left: 3px solid var(--accent); background: var(--red-light); }
+    .card-green  { border-left: 3px solid var(--accent2); background: var(--green-light); }
+    .card-amber  { border-left: 3px solid var(--accent3); background: var(--amber-light); }
+    .card-blue   { border-left: 3px solid var(--blue); background: #EEF3FB; }
+
+    .card-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    /* Stat box */
+    .stat-box {
+      background: var(--paper);
+      border: 1px solid var(--divider);
+      border-radius: 10px;
+      padding: 24px;
+      text-align: center;
+    }
+    .stat-num {
+      font-family: 'DM Serif Display', serif;
+      font-size: 3rem;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .stat-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--ink-mute);
+      margin-top: 6px;
+    }
+
+    /* Tag / badge */
+    .tag {
+      display: inline-block;
+      background: var(--tag-bg);
+      border: 1px solid var(--divider);
+      border-radius: 4px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      padding: 3px 8px;
+      color: var(--ink-soft);
+    }
+    .tag-red   { background: var(--red-light);   border-color: #F0C0B5; color: var(--accent); }
+    .tag-green { background: var(--green-light);  border-color: #A8D5C8; color: var(--accent2); }
+    .tag-amber { background: var(--amber-light);  border-color: #E8C88A; color: var(--accent3); }
+    .tag-blue  { background: #EEF3FB; border-color: #A0BCDF; color: var(--blue); }
+
+    /* Quote block */
+    .quote-block {
+      border-left: 3px solid var(--divider);
+      padding: 10px 16px;
+      background: var(--cream);
+      border-radius: 0 6px 6px 0;
+      font-family: 'DM Serif Display', serif;
+      font-style: italic;
+      font-size: 0.85rem;
+      color: var(--ink-soft);
+      line-height: 1.6;
+    }
+
+    /* Code snippet */
+    .code-block {
+      background: #F0EDE8;
+      border: 1px solid var(--divider);
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--ink-soft);
+      line-height: 1.7;
+    }
+
+    /* Numbered list */
+    .num-list { list-style: none; }
+    .num-list li {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 10px;
+      font-size: 0.82rem;
+      color: var(--ink-soft);
+      line-height: 1.5;
+    }
+    .num-list li .num {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--ink-mute);
+      width: 20px;
+      flex-shrink: 0;
+      padding-top: 3px;
+    }
+
+    /* Slide number chip */
+    .slide-chip {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      background: var(--tag-bg);
+      border: 1px solid var(--divider);
+      border-radius: 4px;
+      padding: 2px 7px;
+      color: var(--ink-mute);
+      display: inline-block;
+      margin-bottom: 14px;
+    }
+
+    /* Research highlight (for star vs comment slide) */
+    .research-box {
+      background: var(--paper);
+      border: 1.5px solid var(--divider);
+      border-radius: 10px;
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+    }
+    .research-box::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 4px; height: 100%;
+      background: var(--accent);
+    }
+
+    /* Comparison table */
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+    }
+    .compare-table th {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ink-mute);
+      padding: 6px 10px;
+      border-bottom: 1.5px solid var(--divider);
+      text-align: left;
+    }
+    .compare-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #EDE9E3;
+      color: var(--ink-soft);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+    .compare-table tr:last-child td { border-bottom: none; }
+
+    /* Pain point visual */
+    .pain-scenario {
+      background: var(--paper);
+      border: 1px solid var(--divider);
+      border-radius: 10px;
+      padding: 18px;
+      position: relative;
+    }
+
+    /* Review mock */
+    .review-mock {
+      background: var(--paper);
+      border: 1px solid var(--divider);
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 0.78rem;
+    }
+    .star-row {
+      display: flex;
+      gap: 3px;
+      margin-bottom: 6px;
+    }
+    .star { color: #E8B84B; font-size: 0.85rem; }
+    .star-empty { color: #DDD; font-size: 0.85rem; }
+
+    /* Arrow connector */
+    .arrow-down {
+      text-align: center;
+      font-size: 1.2rem;
+      color: var(--ink-mute);
+      margin: 6px 0;
+    }
+
+    /* DINESERV 5 dims */
+    .dim-card {
+      background: var(--paper);
+      border: 1px solid var(--divider);
+      border-radius: 8px;
+      padding: 14px;
+      text-align: center;
+    }
+    .dim-icon { font-size: 1.4rem; margin-bottom: 8px; }
+    .dim-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+    .dim-body { font-size: 0.68rem; color: var(--ink-mute); line-height: 1.5; }
+
+    /* Progress bar */
+    .progress-bar {
+      background: var(--divider);
+      border-radius: 4px;
+      height: 6px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: var(--accent2);
+    }
+
+    /* Tool flow */
+    .tool-step {
+      background: var(--paper);
+      border: 1px solid var(--divider);
+      border-radius: 8px;
+      padding: 14px;
+    }
+    .tool-step-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--ink-mute);
+      margin-bottom: 4px;
+    }
+
+    /* Big visual stat bar for pain point */
+    .impact-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .impact-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      width: 160px;
+      flex-shrink: 0;
+      color: var(--ink-soft);
+    }
+    .impact-track {
+      flex: 1;
+      background: var(--divider);
+      border-radius: 4px;
+      height: 8px;
+    }
+    .impact-fill {
+      height: 100%;
+      border-radius: 4px;
+    }
+    .impact-val {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--ink-mute);
+      width: 36px;
+      text-align: right;
+    }
+
+    /* Path cards */
+    .path-card {
+      background: var(--paper);
+      border: 1px solid var(--divider);
+      border-radius: 8px;
+      padding: 14px;
+    }
+    .path-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 6px;
+    }
+
+    /* Cover slide special */
+    .cover-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--ink);
+      color: var(--cream);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      padding: 5px 12px;
+      border-radius: 4px;
+      margin-bottom: 22px;
+    }
+    .cover-tag::before {
+      content: '';
+      display: inline-block;
+      width: 6px; height: 6px;
+      background: #4CAF7D;
+      border-radius: 50%;
+    }
+
+    .cover-sidebar {
+      background: var(--paper);
+      border: 1.5px solid var(--divider);
+      border-radius: 12px;
+      padding: 28px 22px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    /* Closing slide */
+    .closing-hero {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2rem;
+      line-height: 1.2;
+      color: var(--ink);
+    }
+
+    /* Slide title decoration */
+    .slide-title-group {
+      margin-bottom: 24px;
+    }
+    .slide-title-group h2 {
+      border-bottom: none;
+    }
+
+    /* Inline highlight */
+    mark {
+      background: #FFF3CC;
+      padding: 0 3px;
+      border-radius: 3px;
+    }
+
+    /* Responsive columns adjustments for reveal */
+    .col-7 { grid-column: span 7; }
+    .col-5 { grid-column: span 5; }
+
+    .reveal .slides section .fragment {
+      will-change: opacity, transform;
+    }
+  </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ============================================================ -->
+<!-- SLIDE 1 · COVER -->
+<!-- ============================================================ -->
+<section>
+  <div style="display:grid; grid-template-columns: 1.5fr 1fr; gap: 40px; align-items: center; height: 100%; padding: 0;">
+    <div>
+      <div class="cover-tag">Day 6 Demo Day · Group A2_E402</div>
+      <h1 style="font-size: 2.4rem; margin-bottom: 18px;">Biến Phản Hồi Khách Hàng Thành Bản Đồ Rủi Ro Vận Hành Chuỗi F&amp;B</h1>
+      <p style="font-size: 0.88rem; margin-bottom: 20px;">Trợ lý AI tự động hóa phân tích review theo cấu trúc ABSA, mô hình DINESERV và kiến trúc an toàn Tool-Calling.</p>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <span class="tag">ABSA · SemEval-2016</span>
+        <span class="tag">DINESERV Framework</span>
+        <span class="tag">Tool-Calling Agent</span>
+        <span class="tag">Vietnamese NLP</span>
+      </div>
+    </div>
+    <div class="cover-sidebar">
+      <div style="font-size:2.6rem;">🤖</div>
+      <div style="font-family:'DM Serif Display',serif; font-size:1.2rem;">Operations AI</div>
+      <div class="eyebrow">Version 1.0 · Active</div>
+      <hr class="divider" style="width:100%;">
+      <div style="font-size:0.72rem; color:var(--ink-soft); line-height:1.6;">
+        Từ Dữ liệu thô<br>→ Hành động Vận hành
+      </div>
+      <span class="tag tag-green">AUGMENTATION MODE</span>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================ -->
+<!-- SLIDE 2 · PAIN POINT: BẪY ĐIỂM SAO (RESEARCH FOCUS) -->
+<!-- ============================================================ -->
+<section>
+  <div class="slide-title-group">
+    <div class="slide-chip">Slide 2 · Pain Point</div>
+    <h2>Bẫy Điểm Sao: Tại Sao Điểm Số Không Đủ?</h2>
+    <p style="font-size:0.8rem; margin-top: 6px;">Nghiên cứu kinh tế lượng chỉ ra khoảng cách lớn giữa <mark>điểm sao trung bình</mark> và <mark>nội dung văn bản review</mark>.</p>
+  </div>
+
+  <!-- Real-use-case visual -->
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom:20px;">
+
+    <!-- Left: Mock review showing the trap -->
+    <div>
+      <div class="eyebrow" style="margin-bottom:8px;">📱 Tình huống thực tế — Google Maps</div>
+      <div class="review-mock">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+          <div style="width:28px;height:28px;border-radius:50%;background:#DDD;display:flex;align-items:center;justify-content:center;font-size:0.75rem;">NH</div>
+          <span style="font-size:0.72rem;font-weight:600;color:var(--ink);">Nguyen H. · 1 tuần trước</span>
+        </div>
+        <div class="star-row">
+          <span class="star">★</span><span class="star">★</span>
+          <span class="star">★</span><span class="star">★</span>
+          <span class="star-empty">★</span>
+          <span style="font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--ink-mute);margin-left:4px;">4.0 / 5</span>
+        </div>
+        <p style="font-size:0.78rem; color:var(--ink-soft); line-height:1.6; font-style:italic;">
+          "Đồ ăn ngon, nhưng phục vụ hôm nay thái độ rất tệ, nhân viên lườm khách, còn nói chuyện điện thoại khi order. Hỏi về voucher thì gắt gỏng không trả lời. Chắc không quay lại."
+        </p>
+      </div>
+      <div class="arrow-down">↓</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        <div class="card card-red" style="padding:10px;">
+          <div class="card-title accent-red">Hệ thống cũ thấy</div>
+          <div style="font-family:'DM Mono',monospace; font-size:1.4rem; color:var(--accent);">⭐ 4.0</div>
+          <div style="font-size:0.7rem; color:var(--ink-mute);">"Bình thường, không cần chú ý"</div>
+        </div>
+        <div class="card card-green" style="padding:10px;">
+          <div class="card-title accent-green">AI phát hiện</div>
+          <div style="font-size:0.68rem; color:var(--ink-soft); line-height:1.6;">
+            <span class="tag tag-red" style="display:block;margin-bottom:3px;">SERVICE_STAFF_ATTITUDE (-1.0)</span>
+            <span class="tag tag-amber" style="display:block;">PRICE_PROMOTION (-0.5)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Research evidence + impact chart -->
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="research-box">
+        <div class="eyebrow" style="margin-bottom:6px;">🎓 Nghiên cứu kinh tế lượng — Michael Luca (2016)</div>
+        <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:6px;">
+          <span style="font-family:'DM Serif Display',serif; font-size:2rem; color:var(--accent);">+5–9%</span>
+          <span style="font-size:0.75rem; color:var(--ink-soft);">doanh thu / mỗi sao tăng thêm</span>
+        </div>
+        <p style="font-size:0.75rem; color:var(--ink-mute); line-height:1.5;">Muốn tăng sao, bạn phải giải quyết lỗi từ <strong>phần chữ</strong> trong review — không phải nhìn vào điểm số tổng hợp.</p>
+      </div>
+
+      <div style="background:var(--paper); border:1px solid var(--divider); border-radius:8px; padding:14px;">
+        <div class="eyebrow" style="margin-bottom:10px;">⚠️ Khoảng cách nguy hiểm: Rating vs Sentiment</div>
+        <div class="impact-bar">
+          <div class="impact-label">Review 4–5 ⭐ nhưng comment tiêu cực</div>
+          <div class="impact-track"><div class="impact-fill" style="width:62%;background:var(--accent);"></div></div>
+          <div class="impact-val">62%</div>
+        </div>
+        <div class="impact-bar">
+          <div class="impact-label">Khách rời đi sau 1 trải nghiệm tệ</div>
+          <div class="impact-track"><div class="impact-fill" style="width:78%;background:var(--accent3);"></div></div>
+          <div class="impact-val">78%</div>
+        </div>
+        <div class="impact-bar">
+          <div class="impact-label">Chủ chuỗi phát hiện lỗi đúng lúc</div>
+          <div class="impact-track"><div class="impact-fill" style="width:18%;background:var(--accent2);"></div></div>
+          <div class="impact-val">18%</div>
+        </div>
+        <p style="font-size:0.65rem;color:var(--ink-mute);margin-top:8px;">Nguồn: Harvard Business Review, BrightLocal Consumer Survey 2024</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card card-amber" style="padding:12px 16px; margin-top:0;">
+    <span style="font-size:0.8rem; color:var(--ink);">💡 <strong>Kết luận:</strong> Điểm sao là bộ lọc tìm kiếm — nội dung text mới là quyết định quay lại. <mark>Điểm sao che giấu sự mất khách âm thầm.</mark></span>
+  </div>
+</section>
+
+
+<!-- ============================================================ -->
+<!-- SLIDE 3 · PAIN POINT: QUÁ TẢI THÔNG TIN ĐA KÊNH -->
+<!-- ============================================================ -->
+<section>
+  <div class="slide-title-group">
+    <div class="slide-chip">Slide 3 · Pain Point</div>
+    <h2>Thách Thức Quá Tải Thông Tin Đa Kênh</h2>
+  </div>
+
+  <div style="display:grid; grid-template-columns: 1.1fr 0.9fr; gap: 28px; align-items: start;">
+    <div style="display:flex; flex-direction:column; gap:14px;">
+
+      <!-- Sources visual -->
+      <div class="card" style="padding:16px;">
+        <div class="eyebrow" style="margin-bottom:10px;">Nguồn review đổ về mỗi tuần</div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+          <span class="tag">📍 Google Maps</span>
+          <span class="tag">📘 Facebook Page</span>
+          <span class="tag">🛵 ShopeeFood</span>
+          <span class="tag">🟢 GrabFood</span>
+          <span class="tag">🔵 Baemin</span>
+          <span class="tag">+ Internal</span>
+        </div>
+        <div class="impact-bar">
+          <div class="impact-label">Google Maps</div>
+          <div class="impact-track"><div class="impact-fill" style="width:85%;background:var(--blue);"></div></div>
+          <div class="impact-val">~340</div>
+        </div>
+        <div class="impact-bar">
+          <div class="impact-label">GrabFood</div>
+          <div class="impact-track"><div class="impact-fill" style="width:65%;background:#2A6B5A;"></div></div>
+          <div class="impact-val">~260</div>
+        </div>
+        <div class="impact-bar">
+          <div class="impact-label">ShopeeFood</div>
+          <div class="impact-track"><div class="impact-fill" style="width:50%;background:var(--accent3);"></div></div>
+          <div class="impact-val">~200</div>
+        </div>
+        <div class="impact-bar">
+          <div class="impact-label">Facebook</div>
+          <div class="impact-track"><div class="impact-fill" style="width:38%;background:var(--accent);"></div></div>
+          <div class="impact-val">~150</div>
+        </div>
+        <p style="font-size:0.65rem;color:var(--ink-mute);margin-top:4px;">Ước tính cho chuỗi 5–10 chi nhánh/tuần</p>
+      </div>
+
+      <!-- Real scenario -->
+      <div class="card card-red" style="padding:14px;">
+        <div class="card-title accent-red">🚨 Hậu quả thực tế — Sự cố bị trôi mất</div>
+        <div class="review-mock" style="margin-top:8px;">
+          <div class="star-row">
+            <span class="star">★</span><span class="star-empty">★</span><span class="star-empty">★</span><span class="star-empty">★</span><span class="star-empty">★</span>
+            <span style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--accent);margin-left:4px;">1 sao · GrabFood</span>
+          </div>
+          <p style="font-size:0.75rem;font-style:italic;color:var(--ink);">"Kinh hãi! Phát hiện miếng băng cá nhân dính dưới đáy đĩa rau sống. Tôi sẽ báo cáo lên cơ quan vệ sinh ATTP."</p>
+        </div>
+        <p style="font-size:0.72rem;color:var(--ink-mute);margin-top:8px;">→ Review này bị chôn trong 950 review tuần đó. Quản lý <strong>không phát hiện trong 4 ngày</strong>.</p>
+      </div>
+    </div>
+
+    <!-- Right: stat + quote -->
+    <div style="display:flex; flex-direction:column; gap:16px;">
+      <div class="stat-box" style="border-color:var(--accent);">
+        <div class="stat-num accent-red">12h</div>
+        <div class="stat-label">Thời gian lãng phí / tuần / chi nhánh</div>
+        <hr class="divider" style="margin:12px 0;">
+        <p style="font-size:0.72rem;color:var(--ink-mute);">Chỉ để đọc, copy-paste và làm báo cáo Excel thủ công</p>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" style="font-size:2.4rem;">×10</div>
+        <div class="stat-label">Chi nhánh trong chuỗi mục tiêu</div>
+        <hr class="divider" style="margin:12px 0;">
+        <p style="font-size:0.72rem;color:var(--ink-mute);">= <strong>120 giờ/tuần</strong> của đội vận hành bị thiêu đốt vào báo cáo thủ công</p>
+      </div>
+      <div class="quote-block">
+        "Chúng ta cần một hệ thống tự động gom nhóm rủi ro có bằng chứng đanh thép."
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================ -->
+<!-- SLIDE 4 · ABSA: TỪ NHÃN ĐƠN → CẶP E#A -->
+<!-- ============================================================ -->
+<section>
+  <div class="slide-title-group">
+    <div class="slide-chip">Slide 4 · Công nghệ lõi</div>
+    <h2>Chuyển Dịch ABSA: Từ Nhãn Đơn → Cấu Trúc Cặp E#A</h2>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:18px;">
+    <div class="card" style="padding:18px;">
+      <span class="tag" style="margin-bottom:10px;display:inline-block;">SemEval-2014 Task 4 · Nhãn Đơn</span>
+      <p style="font-size:0.78rem; margin-bottom:12px;">Câu review:</p>
+      <div class="quote-block" style="margin-bottom:14px; font-size:0.8rem;">"Món lẩu thái quá đắt so với phần thịt ít ỏi"</div>
+      <p style="font-size:0.75rem; color:var(--ink-mute); margin-bottom:8px;">Hệ thống buộc phải chọn <strong>một</strong> nhãn:</p>
+      <div style="display:flex;gap:6px;">
+        <span class="tag">FOOD</span>
+        <span style="color:var(--ink-mute);font-size:0.75rem;padding-top:2px;">hoặc</span>
+        <span class="tag">PRICE</span>
+      </div>
+      <div class="card card-red" style="margin-top:12px;padding:10px;">
+        <div style="font-size:0.72rem; color:var(--accent);">⚠️ Xung đột logic — mất thông tin vận hành</div>
+      </div>
+    </div>
+
+    <div class="card card-green" style="padding:18px;">
+      <span class="tag tag-green" style="margin-bottom:10px;display:inline-block;">SemEval-2016 Task 5 · Cặp Entity#Attribute</span>
+      <p style="font-size:0.78rem; margin-bottom:12px;">Cùng câu review trên:</p>
+      <div class="quote-block" style="margin-bottom:14px; font-size:0.8rem;">"Món lẩu thái quá đắt so với phần thịt ít ỏi"</div>
+      <p style="font-size:0.75rem; color:var(--ink-mute); margin-bottom:8px;">Rã thành <strong>2 nhãn độc lập</strong>:</p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <span class="tag tag-red">FOOD#PRICES · Negative</span>
+        <span class="tag tag-red">FOOD#QUALITY · Negative</span>
+      </div>
+      <div class="card card-green" style="margin-top:12px;padding:10px;">
+        <div style="font-size:0.72rem; color:var(--accent2);">✅ Cấu trúc sạch — chỉ rõ lỗi vận hành cụ thể</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="padding:14px 18px; display:flex; align-items:center; gap:16px;">
+    <div style="font-size:1.4rem;">🎓</div>
+    <div>
+      <div class="eyebrow" style="margin-bottom:2px;">Nguồn nghiên cứu gốc</div>
+      <p style="font-size:0.75rem; color:var(--ink-soft);">Pontiki, M. et al. (2016) — <em>SemEval-2016 Task 5: Aspect Based Sentiment Analysis</em> · ACL Anthology</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================ -->
+<!-- SLIDE 5 · DINESERV -->
+<!-- ============================================================ -->
+<section>
+  <div class="slide-title-group">
+    <div class="slide-chip">Slide 5 · Framework</div>
+    <h2>Mô Hình DINESERV: 5 Chiều Kích Chất Lượng Dịch Vụ</h2>
+    <p style="font-size:0.78rem;margin-top:6px;">Stevens et al. (1995) — ánh xạ sang <strong>19 nhãn</strong> phù hợp cấu trúc vận hành chuỗi F&B.</p>
+  </div>
+
+  <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:12px; margin-bottom:16px;">
+    <div class="dim-card">
+      <div class="dim-icon">🏢</div>
+      <div class="dim-title accent-blue">Hữu Hình<br><span style="font-weight:400;color:var(--ink-mute);">Tangibles</span></div>
+      <div class="dim-body">Vệ sinh quán, tiếng ồn, điều hòa, trang trí, ghế ngồi</div>
+      <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;">
+        <span class="tag" style="font-size:0.55rem;">AMBIENCE_CLEANLINESS</span>
+        <span class="tag" style="font-size:0.55rem;">AMBIENCE_NOISE</span>
+        <span class="tag" style="font-size:0.55rem;">AMBIENCE_COMFORT</span>
+      </div>
+    </div>
+    <div class="dim-card">
+      <div class="dim-icon">🍽️</div>
+      <div class="dim-title accent-green">Tin Cậy<br><span style="font-weight:400;color:var(--ink-mute);">Reliability</span></div>
+      <div class="dim-body">Hương vị chuẩn, độ tươi, nhiệt độ món, định lượng, dọn đúng món</div>
+      <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;">
+        <span class="tag" style="font-size:0.55rem;">FOOD_TASTE</span>
+        <span class="tag" style="font-size:0.55rem;">FOOD_FRESHNESS</span>
+        <span class="tag" style="font-size:0.55rem;">FOOD_TEMPERATURE</span>
+      </div>
+    </div>
+    <div class="dim-card">
+      <div class="dim-icon">⚡</div>
+      <div class="dim-title" style="color:#7B3F9E;">Phản Hồi<br><span style="font-weight:400;color:var(--ink-mute);">Responsiveness</span></div>
+      <div class="dim-body">Tốc độ ra món, sự nhạy bén hỗ trợ của nhân viên</div>
+      <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;">
+        <span class="tag" style="font-size:0.55rem;">SERVICE_WAIT_TIME</span>
+        <span class="tag" style="font-size:0.55rem;">SERVICE_RESPONSIVENESS</span>
+      </div>
+    </div>
+    <div class="dim-card">
+      <div class="dim-icon">🔐</div>
+      <div class="dim-title accent-amber">Đảm Bảo<br><span style="font-weight:400;color:var(--ink-mute);">Assurance</span></div>
+      <div class="dim-body">Thanh toán, xử lý sự cố, giá trị món, minh bạch phụ thu</div>
+      <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;">
+        <span class="tag" style="font-size:0.55rem;">PRICE_VALUE_FOR_MONEY</span>
+        <span class="tag" style="font-size:0.55rem;">PRICE_HIDDEN_COST</span>
+      </div>
+    </div>
+    <div class="dim-card">
+      <div class="dim-icon">💬</div>
+      <div class="dim-title accent-red">Thấu Cảm<br><span style="font-weight:400;color:var(--ink-mute);">Empathy</span></div>
+      <div class="dim-body">Thái độ nhân viên phục vụ, hỗ trợ áp dụng ưu đãi</div>
+      <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;">
+        <span class="tag" style="font-size:0.55rem;">SERVICE_STAFF_ATTITUDE</span>
+        <span class="tag" style="font-size:0.55rem;">PRICE_PROMOTION</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card card-amber" style="padding:12px 16px;">
+    <p style="font-size:0.78rem; color:var(--ink);">📚 <strong>Nguồn:</strong> Stevens, P., Knutson, B. &amp; Patton, M. (1995) — Cornell Hospitality Quarterly. DOI: 10.1177/001088049503600226</p>
+  </div>
+</section>
+
+
+<!-- ============================================================ -->
+<!-- SLIDE 6 · NGHIÊN CỨU: STAR vs COMMENT — FEATURE SLIDE -->
+<!-- ============================================================ -->
+<section>
+  <div class="slide-title-group">
+    <div class="slide-chip">Slide 6 · Research Highlight ✦</div>
+    <h2>Điểm Sao vs Nội Dung Comment: Khoảng Cách Chí Mạng</h2>
+    <p style="font-size:0.78rem; margin-top:6px; color:var(--ink-soft);">Tại sao <mark>review text</mark> mang nhiều giá trị vận hành hơn <mark>điểm số sao</mark> — bằng chứng từ nghiên cứu học thuật và thực tiễn.</p>
+  </div>
+
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:16px;">
+
+    <!-- Left: comparison table -->
+    <div>
+      <div class="eyebrow" style="margin-bottom:8px;">So sánh tín hiệu thông tin</div>
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Tiêu chí</th>
+            <th>⭐ Điểm Sao</th>
+            <th>📝 Nội Dung Text</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Độ chi tiết lỗi</td>
+            <td style="color:var(--accent);">❌ Không có</td>
+            <td style="color:var(--accent2);">✅ Cụ thể: bếp, nhân viên, đóng gói</td>
+          </tr>
+          <tr>
+            <td>Phân biệt nguyên nhân</td>
+            <td style="color:var(--accent);">❌ Không thể</td>
+            <td style="color:var(--accent2);">✅ FOOD#TASTE vs SERVICE#ATTITUDE</td>
+          </tr>
+          <tr>
+            <td>Phát hiện sự cố khủng hoảng</td>
+            <td style="color:var(--accent);">❌ Mù</td>
+            <td style="color:var(--accent2);">✅ Alert: ngộ độc, dị vật</td>
+          </tr>
+          <tr>
+            <td>Tăng doanh thu</td>
+            <td style="color:var(--accent3);">⚠️ +5-9% nếu tăng 1 sao</td>
+            <td style="color:var(--accent2);">✅ Hành động được ngay vào lỗi gốc</td>
+          </tr>
+          <tr>
+            <td>Quyết định quay lại của khách</td>
+            <td style="color:var(--accent);">❌ Dưới 30% ảnh hưởng</td>
+            <td style="color:var(--accent2);">✅ 70%+ dựa vào nội dung text</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Right: 3 real evidence examples -->
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <div class="eyebrow" style="margin-bottom:0px;">Bằng chứng thực tế</div>
+
+      <div class="pain-scenario">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <span class="tag tag-amber">Trường hợp 1 · 4 sao</span>
+          <span style="font-size:0.65rem;color:var(--ink-mute);">Vincom · GrabFood</span>
+        </div>
+        <p style="font-size:0.75rem; font-style:italic; color:var(--ink-soft);">"Đồ ăn ổn, nhưng nước lẩu đổ tràn hết túi giao. Bực không tả được."</p>
+        <div style="margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;">
+          <span class="tag tag-red" style="font-size:0.58rem;">DELIVERY_PACKAGING · Negative</span>
+        </div>
+        <p style="font-size:0.65rem;color:var(--ink-mute);margin-top:4px;">→ Điểm sao: 4 ⭐ "tốt" — Text: mất khách vì logistics</p>
+      </div>
+
+      <div class="pain-scenario">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <span class="tag tag-red">Trường hợp 2 · 3 sao</span>
+          <span style="font-size:0.65rem;color:var(--ink-mute);">Quận 1 · Google Maps</span>
+        </div>
+        <p style="font-size:0.75rem; font-style:italic; color:var(--ink-soft);">"Đợi 45 phút, nhân viên kêu do bếp đông. Nhưng quán trống mà?"</p>
+        <div style="margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;">
+          <span class="tag tag-red" style="font-size:0.58rem;">SERVICE_WAIT_TIME · Critical</span>
+        </div>
+        <p style="font-size:0.65rem;color:var(--ink-mute);margin-top:4px;">→ Severity 4 — cần điều tra bếp, không phải bàn khách</p>
+      </div>
+
+      <div class="pain-scenario">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <span class="tag tag-green">Trường hợp 3 · 5 sao</span>
+          <span style="font-size:0.65rem;color:var(--ink-mute);">Times City · Facebook</span>
+        </div>
+        <p style="font-size:0.75rem; font-style:italic; color:var(--ink-soft);">"Nhân viên tên Hùng cực kỳ nhiệt tình, nhớ sở thích của mình từ lần trước!"</p>
+        <div style="margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;">
+          <span class="tag tag-green" style="font-size:0.58rem;">SERVICE_STAFF_ATTITUDE · Positive</span>
+        </div>
+        <p style="font-size:0.65rem;color:var(--ink-mute);margin-top:4px;">→ Điểm mạnh cần nhân rộng toàn chuỗi</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="padding:12px 18px; background:var(--ink); border-color:var(--ink);">
+    <p style="font-size:0.8rem; color:var(--cream);">🔑 <strong>Kết luận nghiên cứu:</strong> Điểm sao là <em>trailing indicator</em> — hậu quả đã xảy ra. Nội dung text là <em>leading indicator</em> — tín hiệu để <mark style="background:#FFF3CC;color:var(--ink);">hành động trước khi mất khách</mark>.</p>
+  </div>
+</section>
+
+
+<!-- ============================================================ -->
+<!-- SLIDE 7 · THÁCH THỨC TIẾNG VIỆT -->
+<!-- ============================================================ -->
+<section>
+  <div class="slide-title-group">
+    <div class="slide-chip">Slide 7 · NLP Challenge</div>
+    <h2>Thách Thức Ngôn Ngữ Học Tiếng Việt</h2>
+  </div>
+
+  <div style="display:grid; grid-template-columns: 1.2fr 0.8fr; gap:24px; align-items:start;">
+    <div style="display:flex; flex-direction:column; gap:14px;">
+      <p style="font-size:0.82rem;">Tiếng Việt là ngôn ngữ đơn tiết, giàu thanh điệu, chứa nhiều từ ghép đa nghĩa, từ lóng và sắc thái <strong>mỉa mai</strong> cực kỳ phức tạp với AI truyền thống.</p>
+
+      <div class="card card-red" style="padding:14px;">
+        <div class="card-title accent-red">Ví dụ mỉa mai — AI truyền thống thất bại</div>
+        <div class="quote-block" style="margin:8px 0;">
+          "Đợi món có nửa tiếng chứ mấy, nhân viên thì coi khách như tàng hình, quán đỉnh thật sự!"
+        </div>
+        <div style="display:flex; gap:8px; margin-top:8px; align-items:center;">
+          <div>
+            <div class="eyebrow" style="margin-bottom:2px;">AI thấy "đỉnh" → Positive</div>
+            <span class="tag tag-red">Thực tế: cực kỳ tiêu cực (-1.0)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="padding:14px;">
+        <div class="eyebrow" style="margin-bottom:8px;">Benchmark KSE 2019 — Hiệu năng thực tế</div>
+        <div style="margin-bottom:8px;">
+          <div style="display:flex; justify-content:space-between; font-size:0.72rem; margin-bottom:3px;">
+            <span>Phát hiện khía cạnh (Aspect Detection)</span>
+            <span style="font-weight:600; color:var(--accent2);">87.13%</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width:87%"></div></div>
+        </div>
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:0.72rem; margin-bottom:3px;">
+            <span>Nhận diện cảm xúc phân cực (Sentiment)</span>
+            <span style="font-weight:600; color:var(--accent);">59.20%</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width:59%;background:var(--accent);"></div></div>
+        </div>
+        <p style="font-size:0.65rem;color:var(--ink-mute);margin-top:8px;">→ Khoảng cách 28% này đòi hỏi cơ chế Human-in-the-Loop bắt buộc</p>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:14px;">
+      <div class="stat-box">
+        <div class="stat-num" style="color:var(--accent3);">59%</div>
+        <div class="stat-label">Độ chính xác cảm xúc tiếng Việt</div>
+        <p style="font-size:0.72rem; color:var(--ink-mute); margin-top:8px;">AI không thể tin tưởng mù quáng — phải có luồng kiểm soát của người dùng</p>
+      </div>
+      <div class="card card-amber" style="padding:14px;">
+        <div class="card-title accent-amber">Giải pháp của chúng tôi</div>
+        <ul class="num-list">
+          <li><span class="num">01</span>Hiển thị quote gốc sát bên nhãn để đối chiếu</li>
+          <li><span class="num">02</span>Low-confidence warning khi AI không chắc</li>
+          <li><span class="num">03</span>Correction Path — người dùng sửa nhãn, AI tự học</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================ -->
+<!-- SLIDE 8 · LOGISTICS & PACKAGING -->
+<!-- ============================================================ -->
+<section>
+  <div class="slide-title-group">
+    <div class="slide-chip">Slide 8 · Research</div>
+    <h2>Yếu Tố Đóng Gói Giao Hàng: Lỗi Ẩn Nghìn Đô</h2>
+  </div>
+
+  <div style="display:grid; grid-template-columns: 0.8fr 1.2fr; gap:24px; align-items:start;">
+    <div>
+      <div class="stat-box" style="border-color:var(--accent2);margin-bottom:16px;">
+        <div class="stat-num accent-green">−40%</div>
+        <div class="stat-label">Đánh giá tiêu cực trên app giao đồ</div>
+        <p style="font-size:0.7rem;color:var(--ink-mute);margin-top:8px;">Chỉ bằng cách cải thiện bao bì,<br>không cần đổi công thức nấu ăn</p>
+      </div>
+
+      <div class="card card-green" style="padding:14px;">
+        <div class="card-title accent-green">📦 Minh chứng thực nghiệm</div>
+        <p style="font-size:0.75rem; color:var(--ink-soft); line-height:1.6;">Plateful Consulting (2026) — Nhà hàng tách biệt nhãn đóng gói và cải tiến bao bì ghi nhận mức giảm đến <strong>40% phàn nàn</strong> trong 30–45 ngày.</p>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="eyebrow">Lỗi phổ biến trong delivery không được ghi nhận</div>
+
+      <!-- 3 delivery pain points with visuals -->
+      <div class="review-mock">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <span class="tag tag-red">Lỗi phổ biến #1</span>
+          <span class="tag" style="font-size:0.58rem;">🛵 GrabFood</span>
+        </div>
+        <p style="font-size:0.75rem;font-style:italic;">"Nước lẩu đổ lê láng cả túi nilon, hộp nhựa mỏng quá — tới nơi đồ ăn nát bét."</p>
+        <span class="tag tag-red" style="margin-top:6px;display:inline-block;font-size:0.6rem;">DELIVERY_PACKAGING · Severity 3</span>
+      </div>
+
+      <div class="review-mock">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <span class="tag tag-amber">Lỗi phổ biến #2</span>
+          <span class="tag" style="font-size:0.58rem;">🛍️ ShopeeFood</span>
+        </div>
+        <p style="font-size:0.75rem;font-style:italic;">"Đồ rán được niêm phong kín quá, hơi nước đọng lại làm sũng nước, mất ngon hẳn."</p>
+        <span class="tag tag-amber" style="margin-top:6px;display:inline-block;font-size:0.6rem;">FOOD_TEMPERATURE · Severity 2</span>
+      </div>
+
+      <div class="card card-amber" style="padding:12px 14px;">
+        <p style="font-size:0.78rem;color:var(--ink);">💡 Hệ thống của chúng tôi tách biệt nhãn <code style="background:var(--tag-bg);padding:1px 5px;border-radius:3px;font-size:0.72rem;">DELIVERY_PACKAGING</code> để chủ chuỗi hành động đúng điểm — không cần đổi bếp, chỉ đổi hộp.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================ -->
+<!-- SLIDE 9 · KIẾN TRÚC TOOL-CALLING -->
+<!-- ============================================================ -->
+<section>
+  <div class="slide-title-group">
+    <div class="slide-chip">Slide 9 · Architecture</div>
+    <h2>Kiến Trúc An Toàn: Tool-Calling Agent</h2>
+    <p style="font-size:0.78rem;margin-top:6px;">Thay vì cho LLM tự viết và chạy code Python — một cạm bẫy bảo mật nghiêm trọng.</p>
+  </div>
+
+  <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:16px; margin-bottom:16px;">
+    <div class="tool-step">
+      <div class="tool-step-num">BƯỚC 1 · USER QUERY</div>
+      <div style="font-size:1.2rem;margin:8px 0;">🗣️</div>
+      <p style="font-size:0.75rem;color:var(--ink-soft);">"Tuần này chi nhánh nào bị chê nhiều nhất về thái độ nhân viên?"</p>
+    </div>
+
+    <div class="tool-step" style="border-color:var(--accent2);">
+      <div class="tool-step-num accent-green">BƯỚC 2 · LLM ORCHESTRATOR</div>
+      <div style="font-size:1.2rem;margin:8px 0;">🧠</div>
+      <p style="font-size:0.75rem;color:var(--ink-soft);margin-bottom:8px;">Nhận diện intent, trích xuất tham số, gọi hàm định nghĩa sẵn:</p>
+      <div class="code-block">get_trending_issues(<br>&nbsp;&nbsp;subcategory=<br>&nbsp;&nbsp;"SERVICE_STAFF_ATTITUDE"<br>)</div>
+    </div>
+
+    <div class="tool-step">
+      <div class="tool-step-num">BƯỚC 3 · DATABASE</div>
+      <div style="font-size:1.2rem;margin:8px 0;">💾</div>
+      <p style="font-size:0.75rem;color:var(--ink-soft);">Hàm Python thực thi trên CSV, lọc dữ liệu và trả về kết quả kèm quote gốc làm bằng chứng.</p>
+    </div>
+  </div>
+
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+    <div class="card card-green" style="padding:14px;">
+      <div class="card-title accent-green">✅ Tool-Calling (Cách của chúng tôi)</div>
+      <ul class="num-list">
+        <li><span class="num">→</span>LLM chỉ gọi các hàm đã định nghĩa sẵn</li>
+        <li><span class="num">→</span>Không thể thực thi code tùy ý</li>
+        <li><span class="num">→</span>Output có cấu trúc JSON, dễ kiểm soát</li>
+      </ul>
+    </div>
+    <div class="card card-red" style="padding:14px;">
+      <div class="card-title accent-red">❌ Code Execution (Nguy hiểm)</div>
+      <ul class="num-list">
+        <li><span class="num">→</span>LLM tự viết và chạy Python tự do</li>
+        <li><span class="num">→</span>Có thể đọc/xóa file hệ thống</li>
+        <li><span class="num">→</span>SQL injection, data leak</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================ -->
+<!-- SLIDE 10 · HUMAN-IN-THE-LOOP + 4 PATHS UX -->
+<!-- ============================================================ -->
+<section>
+  <div class="slide-title-group">
+    <div class="slide-chip">Slide 10 · UX Design</div>
+    <h2>Lưới An Toàn UX: AI Không Phải Autopilot</h2>
+    <p style="font-size:0.78rem;margin-top:6px;">AI gợi ý — Con người quyết định. Bộ khung 4 Paths kiểm soát toàn bộ sự bất định.</p>
+  </div>
+
+  <div class="quote-block" style="margin-bottom:18px; font-size:0.82rem;">
+    "Nếu mô hình chỉ đạt độ chính xác 60%, bạn phải thiết kế sản phẩm theo một cách hoàn toàn khác."
+    <footer style="text-align:right;font-size:0.65rem;font-family:'DM Mono',monospace;margin-top:4px;color:var(--accent2);">— Kevin Weil, CPO OpenAI</footer>
+  </div>
+
+  <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px;">
+    <div class="path-card" style="border-top:3px solid var(--accent2);">
+      <div class="path-title accent-green">① Happy Path</div>
+      <p style="font-size:0.72rem;color:var(--ink-mute);margin-bottom:8px;">AI tự tin phân loại đúng review rõ ràng</p>
+      <div class="code-block" style="font-size:0.6rem;">Nhãn xanh + Quote gốc</div>
+    </div>
+    <div class="path-card" style="border-top:3px solid var(--accent3);">
+      <div class="path-title accent-amber">② Low-Confidence</div>
+      <p style="font-size:0.72rem;color:var(--ink-mute);margin-bottom:8px;">AI không chắc về phân loại</p>
+      <div class="code-block" style="font-size:0.6rem;">⚠️ Cảnh báo vàng — Yêu cầu xác nhận</div>
+    </div>
+    <div class="path-card" style="border-top:3px solid var(--accent);">
+      <div class="path-title accent-red">③ Failure Path</div>
+      <p style="font-size:0.72rem;color:var(--ink-mute);margin-bottom:8px;">AI sai do mỉa mai tiếng Việt</p>
+      <div class="code-block" style="font-size:0.6rem;">Luôn hiển thị Quote gốc để kiểm chứng</div>
+    </div>
+    <div class="path-card" style="border-top:3px solid var(--blue);">
+      <div class="path-title accent-blue">④ Correction Path</div>
+      <p style="font-size:0.72rem;color:var(--ink-mute);margin-bottom:8px;">Con người can thiệp sửa nhãn sai</p>
+      <div class="code-block" style="font-size:0.6rem;">✏️ Sửa nhãn → log → AI tự học</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px; padding:12px 18px; display:flex; align-items:center; gap:12px;">
+    <div style="font-size:1.4rem;">🎯</div>
+    <p style="font-size:0.78rem; color:var(--ink);">Thiết kế <strong>Augmentation</strong> (Trợ lý đồng hành), không phải <strong>Automation</strong> (Tự động hoàn toàn) — AI phân tích gợi ý, người vận hành giữ quyền quyết định và trách nhiệm cuối cùng.</p>
+  </div>
+</section>
+
+
+<!-- ============================================================ -->
+<!-- SLIDE 11 · DEMO SCENARIOS -->
+<!-- ============================================================ -->
+<section>
+  <div class="slide-title-group">
+    <div class="slide-chip">Slide 11 · Demo</div>
+    <h2>Kịch Bản Demo: Từ Review Thô → Hành Động Vận Hành</h2>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:16px;">
+    <div class="card card-red" style="padding:18px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <span class="card-title accent-red">🚨 Kịch bản 1: Khủng hoảng Vệ sinh</span>
+        <span class="tag tag-red">Severity: 5 · CRITICAL</span>
+      </div>
+      <div class="review-mock" style="margin-bottom:10px;">
+        <div class="star-row"><span class="star">★</span><span class="star-empty">★</span><span class="star-empty">★</span><span class="star-empty">★</span><span class="star-empty">★</span></div>
+        <p style="font-size:0.75rem;font-style:italic;">"Kinh hãi phát hiện miếng băng cá nhân đã qua sử dụng dính dưới đáy đĩa rau sống tại chi nhánh Quận 1."</p>
+      </div>
+      <div class="code-block" style="font-size:0.65rem;">
+        🤖 Alert đỏ: AMBIENCE_CLEANLINESS<br>
+        Severity: 5 · Confidence: 0.97<br>
+        → Đề xuất: Đình chỉ ca làm việc,<br>&nbsp;&nbsp;kiểm tra quy trình sơ chế bếp Q1
+      </div>
+    </div>
+
+    <div class="card card-amber" style="padding:18px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <span class="card-title accent-amber">📦 Kịch bản 2: Lỗi Logistics</span>
+        <span class="tag tag-amber">18 mentions tuần này</span>
+      </div>
+      <div class="review-mock" style="margin-bottom:10px;">
+        <div class="star-row"><span class="star">★</span><span class="star">★</span><span class="star-empty">★</span><span class="star-empty">★</span><span class="star-empty">★</span></div>
+        <p style="font-size:0.75rem;font-style:italic;">"Nước lẩu giao tới bị đổ lê láng ra ngoài túi nilon, hộp nhựa mỏng quá chịu nhiệt kém."</p>
+      </div>
+      <div class="code-block" style="font-size:0.65rem;">
+        🤖 Gom nhóm rủi ro: 18 phàn nàn<br>
+        DELIVERY_PACKAGING · Trend +240%<br>
+        → Đề xuất: Thay hộp đựng chống tràn<br>&nbsp;&nbsp;(-40% complaints, Plateful 2026)
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="padding:14px 18px;">
+    <div class="eyebrow" style="margin-bottom:10px;">3 Giá Trị Vận Hành Cốt Lõi</div>
+    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:16px; text-align:center;">
+      <div>
+        <div style="font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--accent);">Vô hiệu hóa</div>
+        <div style="font-size:0.72rem;color:var(--ink-mute);">bẫy dữ liệu điểm sao trung bình</div>
+      </div>
+      <div>
+        <div style="font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--accent2);">−95%</div>
+        <div style="font-size:0.72rem;color:var(--ink-mute);">thời gian tìm lỗi hệ thống</div>
+      </div>
+      <div>
+        <div style="font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--accent3);">Tự học</div>
+        <div style="font-size:0.72rem;color:var(--ink-mute);">có kiểm soát, có bằng chứng</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================ -->
+<!-- SLIDE 12 · CLOSING -->
+<!-- ============================================================ -->
+<section>
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:40px; align-items:center; height:100%;">
+    <div>
+      <div class="slide-chip">Day 6 Demo Day · Group A2_E402</div>
+      <div class="closing-hero">Giám sát chất lượng chi nhánh từ xa<br><em>không cần camera.</em></div>
+      <hr class="divider" style="margin:20px 0;">
+      <p style="font-size:0.82rem;">Chúng tôi không xây chatbot tóm tắt review thông thường. Chúng tôi tạo ra hệ thống <strong>cảnh báo sớm lỗi vận hành</strong> trước khi khách hàng quyết định rời đi mãi mãi.</p>
+      <div style="margin-top:20px;">
+        <div class="eyebrow" style="margin-bottom:6px;">Liên hệ đội ngũ phát triển</div>
+        <div style="font-family:'DM Mono',monospace; font-size:0.85rem; color:var(--accent2);">group_a2_e402@contact.com</div>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:14px;">
+      <div class="stat-box">
+        <div class="stat-num">19</div>
+        <div class="stat-label">Nhãn DINESERV tương thích vận hành</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num accent-red">−95%</div>
+        <div class="stat-label">Thời gian báo cáo thủ công</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num accent-green">4 Paths</div>
+        <div class="stat-label">UX Safety Net kiểm soát AI</div>
+      </div>
+      <div class="tag tag-green" style="text-align:center;padding:8px;font-size:0.7rem;display:block;">
+        ✓ ABSA · DINESERV · Tool-Calling · Human-in-the-Loop
+      </div>
+    </div>
+  </div>
+</section>
+
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+<script>
+  Reveal.initialize({
+    hash: true,
+    controls: true,
+    progress: true,
+    slideNumber: 'c/t',
+    transition: 'fade',
+    backgroundTransition: 'fade',
+    width: 1280,
+    height: 720,
+    margin: 0.04
+  });
+</script>
+</body>
+</html>
