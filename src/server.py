@@ -7,9 +7,14 @@ import urllib.parse
 from datetime import datetime, timedelta
 import collections
 
+from chat_handler import handle_chat_request, OLLAMA_MODEL, OLLAMA_URL
+
 PORT = 8000
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
 DATA_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data", "processed", "analyzed_reviews.json"))
+
+# List of static files to serve from src/static
+STATIC_FILES = {"", "/", "/index.html", "/style.css", "/app.js", "/chat.html", "/chat.css", "/chat.js"}
 
 class DashboardHandler(http.server.SimpleHTTPRequestHandler):
     def translate_path(self, path):
@@ -17,12 +22,20 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
         parsed_url = urllib.parse.urlparse(path)
         clean_path = parsed_url.path
         
-        if clean_path in ["", "/", "/index.html", "/style.css", "/app.js"]:
+        if clean_path in STATIC_FILES:
             if clean_path in ["", "/"]:
                 clean_path = "/index.html"
             return os.path.join(STATIC_DIR, clean_path.lstrip("/"))
             
         return super().translate_path(path)
+
+    def do_OPTIONS(self):
+        """Handle CORS preflight requests."""
+        self.send_response(200)
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.end_headers()
 
     def do_GET(self):
         parsed_url = urllib.parse.urlparse(self.path)
@@ -36,6 +49,16 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
         else:
             # Fallback to serving static files
             super().do_GET()
+
+    def do_POST(self):
+        """Route POST requests — delegates chat to chat_handler module."""
+        parsed_url = urllib.parse.urlparse(self.path)
+        path = parsed_url.path
+
+        if path == "/api/chat":
+            handle_chat_request(self)
+        else:
+            self.send_json_response({"error": "Not found"}, status=404)
 
     def send_json_response(self, data, status=200):
         response_bytes = json.dumps(data, ensure_ascii=False).encode("utf-8")
@@ -130,7 +153,6 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
             
             # Risk Score = sum(Impact Score of subcategories with sentiment < 0)
             # Impact Score = Mentions x Avg Severity x Avg Confidence
-            # Let's compute impact score per subcategory for this branch
             sub_negatives = collections.defaultdict(list)
             b_positives = []
             
@@ -225,10 +247,6 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
             growth_rate = (curr_count - prev_count) / max(prev_count, 1)
             avg_severity = sum(r["severity"] for r in curr_recs) / curr_count
             
-            # Rule: Current Mentions >= 10, Growth Rate >= 100% (1.0), Avg Severity >= 3
-            # For testing and visualization on our mock dataset, if nothing matches,
-            # we can lower the threshold slightly or just display the highest growth issues.
-            # Let's keep the strict rule but add a fallback top 3 growth issues if empty.
             if curr_count >= 5 and growth_rate >= 0.5 and avg_severity >= 2.5:
                 emerging_issues.append({
                     "subcategory": sub,
@@ -327,10 +345,12 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
         }
         self.send_json_response(response)
 
+
 def run_server():
     socketserver.TCPServer.allow_reuse_address = True
     with socketserver.TCPServer(("", PORT), DashboardHandler) as httpd:
         print(f"CRM Dashboard Web Server starting at http://localhost:{PORT}")
+        print(f"Ollama Model: {OLLAMA_MODEL} @ {OLLAMA_URL}")
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
@@ -338,3 +358,4 @@ def run_server():
 
 if __name__ == "__main__":
     run_server()
+

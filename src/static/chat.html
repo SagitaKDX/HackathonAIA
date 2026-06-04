@@ -1,0 +1,78 @@
+<!-- Chat Page Content (loaded dynamically by app.js) -->
+<div class="chat-container">
+  
+  <!-- Chat Header -->
+  <div class="chat-header-bar">
+    <div class="chat-header-left">
+      <div class="chat-model-avatar">🤖</div>
+      <div class="chat-model-info">
+        <h2>InsightAgent AI</h2>
+        <span class="chat-model-tag">
+          <span class="chat-model-dot" id="chat-model-dot"></span>
+          <span id="chat-model-status">Qwen 2.5 · Ollama Local</span>
+        </span>
+      </div>
+    </div>
+    <div class="chat-header-right">
+      <button class="chat-clear-btn" id="chat-clear-btn" title="Xóa lịch sử chat">
+        🗑️ Xóa chat
+      </button>
+    </div>
+  </div>
+
+  <!-- Chat Messages Area -->
+  <div class="chat-messages" id="chat-messages">
+    
+    <!-- Welcome State -->
+    <div class="chat-welcome" id="chat-welcome">
+      <div class="chat-welcome-icon">🧠</div>
+      <h3>Xin chào! Tôi là InsightAgent AI</h3>
+      <p>Tôi có thể phân tích dữ liệu đánh giá khách hàng của bạn. Hỏi tôi bất kỳ điều gì về reviews, chi nhánh, sentiment, hoặc xu hướng.</p>
+      
+      <!-- Suggested Prompts -->
+      <div class="chat-suggestions" id="chat-suggestions">
+        <button class="chat-suggestion-chip" data-prompt="Chi nhánh nào có rủi ro cao nhất và tại sao?">
+          ⚠️ Chi nhánh rủi ro cao nhất?
+        </button>
+        <button class="chat-suggestion-chip" data-prompt="Tóm tắt top 5 vấn đề khiếu nại lớn nhất hiện tại">
+          📋 Top 5 khiếu nại
+        </button>
+        <button class="chat-suggestion-chip" data-prompt="So sánh sentiment giữa các chi nhánh, chi nhánh nào đang làm tốt nhất?">
+          📊 So sánh chi nhánh
+        </button>
+        <button class="chat-suggestion-chip" data-prompt="Phân tích xu hướng đánh giá về chất lượng đồ ăn trong tuần qua">
+          🍜 Xu hướng đồ ăn
+        </button>
+        <button class="chat-suggestion-chip" data-prompt="Đề xuất các hành động cải thiện cụ thể cho chi nhánh có nhiều phàn nàn nhất">
+          💡 Đề xuất cải thiện
+        </button>
+        <button class="chat-suggestion-chip" data-prompt="Tổng quan nhanh về tình hình đánh giá khách hàng">
+          🏠 Tổng quan nhanh
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Chat Input Bar -->
+  <div class="chat-input-bar">
+    <div class="chat-input-wrapper">
+      <textarea 
+        id="chat-input" 
+        placeholder="Hỏi về dữ liệu đánh giá khách hàng..." 
+        rows="1"
+        maxlength="2000"
+      ></textarea>
+      <button class="chat-send-btn" id="chat-send-btn" title="Gửi (Enter)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </div>
+    <div class="chat-input-hint">
+      <span>Enter để gửi · Shift+Enter để xuống dòng</span>
+    </div>
+  </div>
+
+</div>

@@ -4,14 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Customer Review Insight Agent - CRM Dashboard</title>
+  <meta name="description" content="InsightAgent CRM Dashboard — Phân tích đánh giá khách hàng thông minh cho chuỗi nhà hàng.">
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <!-- Stylesheet -->
+  <!-- Stylesheets -->
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="chat.css">
   <!-- ApexCharts CDN -->
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <!-- Marked.js for Markdown rendering in chat -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
 
@@ -25,6 +29,20 @@
           <span>CRM Operational Analytics</span>
         </div>
       </div>
+
+      <!-- Tab Navigation -->
+      <div class="nav-tabs">
+        <button class="nav-tab active" id="tab-dashboard" onclick="switchTab('dashboard')">
+          <span class="tab-icon">📊</span>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-tab" id="tab-chat" onclick="switchTab('chat')">
+          <span class="tab-icon">🤖</span>
+          <span>AI Chat</span>
+          <span class="tab-badge">Qwen</span>
+        </button>
+      </div>
+
       <div class="nav-meta">
         <div class="status-indicator">
           <span class="pulse-dot"></span>
@@ -34,12 +52,13 @@
     </div>
   </nav>
 
-  <!-- Main Grid Layout -->
-  <main class="dashboard-container">
+  <!-- ═══════════════════════════════════════ -->
+  <!-- PAGE: Dashboard                        -->
+  <!-- ═══════════════════════════════════════ -->
+  <main class="dashboard-container" id="page-dashboard">
     
     <!-- Row 1: KPI Cards -->
     <section class="kpi-grid">
-      
       <div class="kpi-card" id="kpi-total-reviews">
         <div class="kpi-header">
           <span>Tổng số Review</span>
@@ -78,13 +97,10 @@
         <div class="kpi-value success-text" id="val-best-branch">-</div>
         <div class="kpi-subtext" id="val-best-score">Strength Score: -</div>
       </div>
-
     </section>
 
     <!-- Row 2: Analytics & Charts -->
     <section class="charts-grid">
-      
-      <!-- Chart 1: Time Series Sentiment & Volume -->
       <div class="chart-card large">
         <div class="card-header">
           <h2>Xu hướng Thể tích & Sentiment Theo Thời gian</h2>
@@ -95,7 +111,6 @@
         </div>
       </div>
 
-      <!-- Chart 2: Category Breakdown -->
       <div class="chart-card">
         <div class="card-header">
           <h2>Phân bổ Khía cạnh (Aspect Category)</h2>
@@ -104,13 +119,10 @@
           <div id="chart-categories"></div>
         </div>
       </div>
-
     </section>
 
     <!-- Row 3: Insights & Actionables -->
     <section class="insights-grid">
-      
-      <!-- Top Complaints -->
       <div class="insight-card">
         <div class="card-header">
           <h2>Top Khiếu nại (Complaints) Lớn Nhất</h2>
@@ -133,7 +145,6 @@
         </div>
       </div>
 
-      <!-- Emerging Issues Alert Panel -->
       <div class="insight-card">
         <div class="card-header">
           <h2>Dấu hiệu Bất thường Mới (Emerging Issues)</h2>
@@ -143,12 +154,10 @@
           <div class="empty-state">Đang phân tích xu hướng tăng đột biến...</div>
         </div>
       </div>
-
     </section>
 
     <!-- Row 4: Review Filtering and Feed -->
     <section class="reviews-section">
-      
       <div class="section-header-row">
         <h2>Bảng Chi Tiết Phản Hồi & Phân Tích</h2>
       </div>
@@ -228,16 +237,22 @@
         <span class="page-info" id="page-info-label">Trang 1</span>
         <button class="btn-page" id="btn-next-page">Tiếp theo</button>
       </div>
-
     </section>
-
   </main>
 
-  <footer class="footer">
+  <!-- ═══════════════════════════════════════ -->
+  <!-- PAGE: AI Chat (loaded dynamically)     -->
+  <!-- ═══════════════════════════════════════ -->
+  <main class="chat-page" id="page-chat" style="display: none;">
+    <!-- Content loaded from chat.html -->
+  </main>
+
+  <footer class="footer" id="app-footer">
     <p>© 2026 Customer Review Insight Agent Plan. Build for Hackathon Project.</p>
   </footer>
 
-  <!-- Script logic -->
+  <!-- Scripts -->
   <script src="app.js"></script>
+  <script src="chat.js"></script>
 </body>
 </html>

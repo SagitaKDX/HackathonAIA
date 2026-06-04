@@ -1,3 +1,69 @@
+// ══════════════════════════════════════════
+// Tab Navigation & Page Management
+// ══════════════════════════════════════════
+let currentTab = "dashboard";
+let chatPageLoaded = false;
+
+/**
+ * Switch between Dashboard and Chat tabs.
+ * Loads chat.html dynamically on first visit.
+ */
+async function switchTab(tab) {
+  if (tab === currentTab) return;
+  currentTab = tab;
+
+  const pageDashboard = document.getElementById("page-dashboard");
+  const pageChat = document.getElementById("page-chat");
+  const tabDashboard = document.getElementById("tab-dashboard");
+  const tabChat = document.getElementById("tab-chat");
+  const footer = document.getElementById("app-footer");
+
+  if (tab === "dashboard") {
+    pageDashboard.style.display = "";
+    pageChat.style.display = "none";
+    tabDashboard.classList.add("active");
+    tabChat.classList.remove("active");
+    if (footer) footer.style.display = "";
+  } else if (tab === "chat") {
+    pageDashboard.style.display = "none";
+    pageChat.style.display = "flex";
+    tabDashboard.classList.remove("active");
+    tabChat.classList.add("active");
+    if (footer) footer.style.display = "none";
+
+    // Load chat.html on first visit
+    if (!chatPageLoaded) {
+      try {
+        const res = await fetch("chat.html");
+        if (res.ok) {
+          const html = await res.text();
+          pageChat.innerHTML = html;
+          chatPageLoaded = true;
+
+          // Initialize chat module (from chat.js)
+          if (typeof initChat === "function") {
+            initChat();
+          }
+        } else {
+          pageChat.innerHTML = '<div class="error-state">Không thể tải trang Chat.</div>';
+        }
+      } catch (e) {
+        pageChat.innerHTML = `<div class="error-state">Lỗi tải trang Chat: ${e.message}</div>`;
+      }
+    }
+
+    // Focus the chat input
+    setTimeout(() => {
+      const chatInput = document.getElementById("chat-input");
+      if (chatInput) chatInput.focus();
+    }, 100);
+  }
+}
+
+// ══════════════════════════════════════════
+// Dashboard State & Config
+// ══════════════════════════════════════════
+
 // Global State
 let currentPage = 1;
 const limitPerPage = 15;
@@ -9,6 +75,7 @@ let chartCategories = null;
 // API Endpoints
 const API_SUMMARY = "/api/summary";
 const API_REVIEWS = "/api/reviews";
+
 
 // Helper: Format rating stars
 function getRatingStars(rating) {
