@@ -134,7 +134,8 @@ async function sendChatMessage() {
     const decoder = new TextDecoder();
     let buffer = "";
 
-    while (true) {
+    let isStreamDone = false;
+    while (!isStreamDone) {
       const { done, value } = await reader.read();
       if (done) break;
 
@@ -155,6 +156,7 @@ async function sendChatMessage() {
           if (data.error) {
             bubbleEl.innerHTML = `<span class="chat-msg-error">${escapeHtml(data.error)}</span>`;
             bubbleEl.classList.add("chat-msg-error");
+            isStreamDone = true;
             break;
           }
 
@@ -168,6 +170,8 @@ async function sendChatMessage() {
           if (data.done) {
             // Final render
             renderMarkdown(bubbleEl, fullResponse);
+            isStreamDone = true;
+            break;
           }
         } catch (parseErr) {
           console.warn("SSE parse error:", parseErr);

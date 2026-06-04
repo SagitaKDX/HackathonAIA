@@ -347,8 +347,8 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
 
 
 def run_server():
-    socketserver.TCPServer.allow_reuse_address = True
-    with socketserver.TCPServer(("", PORT), DashboardHandler) as httpd:
+    socketserver.ThreadingTCPServer.allow_reuse_address = True
+    with socketserver.ThreadingTCPServer(("", PORT), DashboardHandler) as httpd:
         print(f"CRM Dashboard Web Server starting at http://localhost:{PORT}")
         print(f"Ollama Model: {OLLAMA_MODEL} @ {OLLAMA_URL}")
         try:

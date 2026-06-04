@@ -336,9 +336,10 @@ def handle_chat_request(handler):
     handler.send_response(200)
     handler.send_header("Content-Type", "text/event-stream; charset=utf-8")
     handler.send_header("Cache-Control", "no-cache")
-    handler.send_header("Connection", "keep-alive")
+    handler.send_header("Connection", "close")
     handler.send_header("Access-Control-Allow-Origin", "*")
     handler.end_headers()
+    handler.close_connection = True
 
     # Build conversation messages history
     import datetime
