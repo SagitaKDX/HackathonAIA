@@ -342,8 +342,20 @@ TOOLS_SPEC = [
 ]
 
 SYSTEM_PROMPT = """Bạn là InsightAgent AI — trợ lý phân tích đánh giá khách hàng cho chuỗi nhà hàng.
+Hôm nay là ngày: {current_date}.
+Dữ liệu đánh giá thực tế hiện có trong hệ thống chỉ nằm trong khoảng từ 2026-05-05 đến 2026-05-09.
+
 Bạn có quyền truy cập vào các công cụ phân tích và truy xuất dữ liệu đánh giá thực tế.
 Hãy luôn gọi các công cụ phù hợp để lấy số liệu thực tế trước khi trả lời. Không đoán mò hay tự bịa số liệu.
+
+Nguyên tắc gọi công cụ & chọn tham số:
+1. Phân loại cảm xúc (sentiment):
+   - 'khiếu nại', 'phàn nàn', 'đánh giá xấu', 'đánh giá tệ', 'chê', 'vấn đề', 'lỗi'... -> bắt buộc truyền sentiment='negative'.
+   - 'khen', 'tốt', 'tích cực', 'hài lòng', 'ưu điểm', 'điểm mạnh'... -> bắt buộc truyền sentiment='positive'.
+   - Chỉ truyền sentiment='all' khi người dùng hỏi chung chung về phản hồi/đánh giá mà không phân biệt tốt xấu.
+2. Tham số thời gian (start_date, end_date, period):
+   - KHÔNG tự tiện điền start_date/end_date theo ngày tương lai hoặc đoán mò một khoảng thời gian nằm ngoài dải dữ liệu 2026-05-05 đến 2026-05-09.
+   - Nếu người dùng không hỏi một khoảng thời gian cụ thể (ví dụ không nói rõ 'từ ngày A đến ngày B'), hãy luôn ưu tiên truyền tham số `period` (ví dụ: '30d') hoặc KHÔNG truyền start_date/end_date để hệ thống tự động sử dụng khoảng thời gian dữ liệu thực tế.
 
 Nguyên tắc trả lời:
 1. Trả lời bằng tiếng Việt trừ khi người dùng hỏi bằng tiếng Anh.
@@ -462,7 +474,10 @@ def handle_chat_request(handler):
     handler.end_headers()
 
     # Build conversation messages history
-    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    import datetime
+    current_date = datetime.date.today().strftime("%Y-%m-%d")
+    dynamic_prompt = SYSTEM_PROMPT.format(current_date=current_date)
+    messages = [{"role": "system", "content": dynamic_prompt}]
     for msg in history[-20:]:
         messages.append({
             "role": msg.get("role", "user"),
