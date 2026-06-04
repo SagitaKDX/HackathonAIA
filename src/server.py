@@ -1,3 +1,11 @@
+import sys
+if sys.platform.startswith("win"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 import http.server
 import socketserver
 import json
@@ -36,6 +44,22 @@ DATA_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data"
 STATIC_FILES = {"", "/", "/index.html", "/style.css", "/app.js", "/chat.html", "/chat.css", "/chat.js"}
 
 class DashboardHandler(http.server.SimpleHTTPRequestHandler):
+    def guess_type(self, path):
+        path_lower = path.lower()
+        if path_lower.endswith(".css"):
+            return "text/css"
+        elif path_lower.endswith(".js"):
+            return "application/javascript"
+        elif path_lower.endswith(".html") or path_lower.endswith(".htm"):
+            return "text/html"
+        return super().guess_type(path)
+
+    def send_header(self, keyword, value):
+        if keyword.lower() == "content-type" and value.strip().startswith("text/"):
+            if "charset" not in value.lower():
+                value += "; charset=utf-8"
+        super().send_header(keyword, value)
+
     def translate_path(self, path):
         # Override to serve files from src/static directory
         parsed_url = urllib.parse.urlparse(path)
@@ -75,7 +99,7 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
         path = parsed_url.path
 
         if path == "/api/chat":
-            handle_chat_request(self)
+            handle_chat_request_wrapper(self)
         else:
             self.send_json_response({"error": "Not found"}, status=404)
 
@@ -369,7 +393,14 @@ def run_server():
     socketserver.ThreadingTCPServer.allow_reuse_address = True
     with socketserver.ThreadingTCPServer(("", PORT), DashboardHandler) as httpd:
         print(f"CRM Dashboard Web Server starting at http://localhost:{PORT}")
-        print(f"Ollama Model: {OLLAMA_MODEL} @ {OLLAMA_URL}")
+        provider = os.environ.get("MODEL_PROVIDER", "gemini").lower()
+        if provider == "gemini":
+            print(f"Model Provider: GEMINI ({os.environ.get('GEMINI_MODEL', 'gemini-2.5-flash')})")
+        elif provider in ["openai", "chatgpt"]:
+            print(f"Model Provider: OPENAI/CHATGPT ({os.environ.get('OPENAI_MODEL', 'gpt-4o-mini')})")
+        else:
+            from chat_handler import OLLAMA_MODEL, OLLAMA_URL
+            print(f"Model Provider: OLLAMA ({OLLAMA_MODEL} @ {OLLAMA_URL})")
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
