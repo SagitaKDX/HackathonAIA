@@ -14,6 +14,8 @@ import tools
 # Ollama Configuration
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434")
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "qwen3.5:9b")
+OLLAMA_TEMPERATURE = float(os.environ.get("OLLAMA_TEMPERATURE", "0.0"))
+OLLAMA_NUM_CTX = int(os.environ.get("OLLAMA_NUM_CTX", "8192"))
 
 # Tool name to function mapping
 TOOL_MAPPING = {
@@ -229,10 +231,9 @@ Nguyên tắc gọi công cụ & chọn tham số:
 
 Nguyên tắc trả lời:
 1. Trả lời bằng tiếng Việt trừ khi người dùng hỏi bằng tiếng Anh.
-2. Điều chỉnh mức độ chi tiết theo nhu cầu câu hỏi của người dùng:
-   - Nếu người dùng chỉ muốn biết số liệu khái quát hoặc đếm (ví dụ: 'có bao nhiêu đánh giá xấu'), hãy trả lời ngắn gọn số lượng và đưa ra nhận xét/insight khái quát, không cần liệt kê trích dẫn chi tiết hay đề xuất hành động trừ khi được hỏi.
-   - Nếu câu hỏi yêu cầu phân tích sâu hoặc báo cáo chi tiết, hãy trình bày số liệu cụ thể rõ ràng (dùng bảng hoặc danh sách), dẫn ra các trích dẫn (quotes) đánh giá thực tế làm bằng chứng, và đề xuất các hành động cải thiện cụ thể xếp theo mức độ nghiêm trọng.
+2. Tiết kiệm token & Tập trung vào số liệu: Tuyệt đối KHÔNG viết các đoạn tóm tắt, giải thích dài dòng, phân tích rườm rà hay đưa ra lời khuyên chung chung. Hãy đi thẳng vào câu trả lời, trình bày trực tiếp các con số, số liệu thống kê thu được từ các công cụ dưới dạng bảng (markdown table), danh sách ngắn gọn hoặc trích dẫn thô để người dùng tự đánh giá.
 3. Hiệu năng & Tối ưu: Nếu câu hỏi yêu cầu so sánh nhiều mặt hoặc nhiều chi nhánh, hoặc cần cả rủi ro lẫn điểm mạnh, hãy gọi tất cả các công cụ cần thiết SONG SONG trong cùng một lượt gọi để giảm số lượt xử lý (ví dụ: gọi đồng thời rank_branches và get_top_complaints).
+4. Tiết kiệm ngữ cảnh (Context Window): Luôn truyền tham số `limit` nhỏ khi gọi các công cụ truy xuất dữ liệu (ví dụ: gán `limit=5` hoặc tối đa `limit=10` thay vì `20` hay `30`). Điều này giúp bảo vệ cửa sổ ngữ cảnh của hệ thống không bị quá tải và giúp model phản hồi nhanh hơn rất nhiều.
 
 Nguyên tắc nghiêm ngặt (Guardrails):
 1. KHÔNG ĐƯỢC trả lời bằng các câu nói hứa hẹn suông hoặc mô tả dự định hành động (ví dụ: "Tôi sẽ kiểm tra...", "Tôi sẽ gọi công cụ..."). Hãy gọi công cụ trước, sau đó trả lời TRỰC TIẾP và TRÌNH BÀY ĐẦY ĐỦ số liệu/kết quả lấy được từ công cụ.
@@ -246,7 +247,11 @@ def call_ollama(messages, tools=None, stream=False):
     payload = {
         "model": OLLAMA_MODEL,
         "messages": messages,
-        "stream": stream
+        "stream": stream,
+        "options": {
+            "temperature": OLLAMA_TEMPERATURE,
+            "num_ctx": OLLAMA_NUM_CTX
+        }
     }
     if tools:
         payload["tools"] = tools
