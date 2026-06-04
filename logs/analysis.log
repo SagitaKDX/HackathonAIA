@@ -1552,3 +1552,11 @@ Please retry in 8.185588132s. [{'@type': 'type.googleapis.com/google.rpc.Help', 
 [2026-06-04 12:21:12] Backup progress auto-saved (Checkpoint size: 5793 records).
 [2026-06-04 12:21:12] Processing Batch 123/1239 (Size: 10): rev_11176 to rev_11175
 [2026-06-04 12:21:12] Sending batch request to Gemini API using Key_7 (AIzaSy...PN5I)...
+[2026-06-04 12:21:44] Success! Received 40 aspect records.
+[2026-06-04 12:21:44] Backup progress auto-saved (Checkpoint size: 5833 records).
+[2026-06-04 12:21:44] Processing Batch 124/1239 (Size: 10): rev_11125 to rev_11146
+[2026-06-04 12:21:44] Sending batch request to Gemini API using Key_8 (AIzaSy...VJUE)...
+[2026-06-04 12:22:17] Success! Received 37 aspect records.
+[2026-06-04 12:22:18] Backup progress auto-saved (Checkpoint size: 5870 records).
+[2026-06-04 12:22:18] Processing Batch 125/1239 (Size: 10): rev_11151 to rev_11150
+[2026-06-04 12:22:18] Sending batch request to Gemini API using Key_9 (AIzaSy...x7ME)...
