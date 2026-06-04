@@ -1,0 +1,239 @@
+<!-- Product Introduction Content (loaded dynamically by app.js) -->
+<div class="intro-container">
+  
+  <!-- Hero Section -->
+  <section class="intro-hero">
+    <div class="hero-logo">✨</div>
+    <h1>InsightAgent</h1>
+    <p class="hero-subtitle">Hệ thống AI phân tích phản hồi &amp; Giám sát rủi ro vận hành chuỗi F&amp;B</p>
+    <p class="hero-description">
+      InsightAgent chuyển hóa hàng ngàn phản hồi thô từ các kênh (Google Maps, ShopeeFood, GrabFood, Facebook, nội bộ...) thành các phân tích định lượng chi tiết. Hệ thống giúp nhà quản trị nhận diện rủi ro vận hành thời gian thực bằng phân tích khía cạnh (ABSA), khung chất lượng DINESERV và AI Copilot thông minh.
+    </p>
+  </section>
+
+  <!-- Section: Pipeline Workflow -->
+  <section class="intro-section">
+    <div class="section-title-row">
+      <h2>🔄 Quy Trình Xử Lý Dữ Liệu &amp; Hoạt Động (Data Pipeline)</h2>
+    </div>
+    <div class="pipeline-flow">
+      <div class="pipeline-step">
+        <div class="step-num">01</div>
+        <h3>Thu thập &amp; Làm sạch</h3>
+        <p>Review từ các nguồn (ShopeeFood, GrabFood, Facebook, Google...) được gom tụ và chuẩn hóa tiếng Việt, xử lý từ lóng (slang) và biểu tượng cảm xúc (emoji).</p>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-num">02</div>
+        <h3>Trích xuất ABSA</h3>
+        <p>Mô hình LLM (Gemini) hoặc Rule-based tự động trích xuất các cặp Khía cạnh (Entity#Attribute) và phân tích cảm xúc (Sentiment Score: -1.0 đến 1.0) kèm độ tự tin.</p>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-num">03</div>
+        <h3>Tính toán Chỉ số</h3>
+        <p>Chỉ số rủi ro (Risk Score) và thế mạnh (Strength Score) được tính toán tự động cho từng chi nhánh. Phát hiện nhanh các cảnh báo bất thường mới (Emerging Issues).</p>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-num">04</div>
+        <h3>Hành động Vận hành</h3>
+        <p>Thông tin hiển thị trực quan trên Dashboard. AI Copilot Agent sẵn sàng giải đáp và thực thi các phân tích chuyên sâu qua cơ chế Tool-Calling.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: DINESERV Framework -->
+  <section class="intro-section">
+    <div class="section-title-row">
+      <h2>📊 Khung Đánh Giá DINESERV &amp; 19 Aspect Labels</h2>
+      <span class="badge">Stevens et al. (1995)</span>
+    </div>
+    <p class="section-desc">Hệ thống áp dụng mô hình DINESERV chuẩn hóa quốc tế cho ngành F&amp;B để phân loại phản hồi khách hàng thành 5 chiều kích chất lượng cốt lõi:</p>
+    
+    <div class="dineserv-grid">
+      <div class="dineserv-card">
+        <div class="dineserv-icon">🏢</div>
+        <h3>Hữu Hình (Tangibles)</h3>
+        <p>Không gian, vệ sinh quán, tiếng ồn, nhiệt độ điều hòa, cơ sở vật chất.</p>
+        <div class="aspect-tags">
+          <span>AMBIENCE_CLEANLINESS</span>
+          <span>AMBIENCE_NOISE</span>
+          <span>AMBIENCE_COMFORT</span>
+        </div>
+      </div>
+      
+      <div class="dineserv-card">
+        <div class="dineserv-icon">🍽️</div>
+        <h3>Tin Cậy (Reliability)</h3>
+        <p>Độ tươi ngon, chất lượng món ăn, nhiệt độ món ăn khi phục vụ, dọn đúng món.</p>
+        <div class="aspect-tags">
+          <span>FOOD_TASTE</span>
+          <span>FOOD_FRESHNESS</span>
+          <span>FOOD_TEMPERATURE</span>
+          <span>FOOD_QUALITY</span>
+        </div>
+      </div>
+      
+      <div class="dineserv-card">
+        <div class="dineserv-icon">⚡</div>
+        <h3>Phản Hồi (Responsiveness)</h3>
+        <p>Tốc độ phục vụ, thời gian chờ ra món, khả năng giải quyết yêu cầu của nhân viên.</p>
+        <div class="aspect-tags">
+          <span>SERVICE_WAIT_TIME</span>
+          <span>SERVICE_RESPONSIVENESS</span>
+        </div>
+      </div>
+      
+      <div class="dineserv-card">
+        <div class="dineserv-icon">🔐</div>
+        <h3>Đảm Bảo (Assurance)</h3>
+        <p>Độ chính xác hóa đơn, quy trình thanh toán, sự trung thực và tính chuyên nghiệp.</p>
+        <div class="aspect-tags">
+          <span>PRICE_VALUE_FOR_MONEY</span>
+          <span>PRICE_HIDDEN_COST</span>
+        </div>
+      </div>
+      
+      <div class="dineserv-card">
+        <div class="dineserv-icon">💬</div>
+        <h3>Thấu Cảm (Empathy)</h3>
+        <p>Thái độ cư xử của nhân viên phục vụ, bảo vệ gửi xe, hỗ trợ khuyến mãi.</p>
+        <div class="aspect-tags">
+          <span>SERVICE_STAFF_ATTITUDE</span>
+          <span>PRICE_PROMOTION</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: Mathematical Formulas -->
+  <section class="intro-section">
+    <div class="section-title-row">
+      <h2>🧮 Khung Đo Lường Chỉ Số Vận Hành (Formulas)</h2>
+    </div>
+    <div class="formulas-grid">
+      <div class="formula-card">
+        <h3>Chỉ số Tác động (Impact Score)</h3>
+        <p class="formula-desc">Đo lường tầm ảnh hưởng của một khía cạnh tiêu cực cụ thể trong chuỗi nhà hàng.</p>
+        <div class="formula-box">
+          <code>Impact Score = Mentions &times; Avg Severity &times; Avg Confidence</code>
+        </div>
+        <span class="formula-note">* Mức độ nghiêm trọng (Severity) tính từ 1-5; Độ tin cậy (Confidence) tính từ 0-1.</span>
+      </div>
+
+      <div class="formula-card">
+        <h3>Chỉ số Rủi ro Chi nhánh (Risk Score)</h3>
+        <p class="formula-desc">Đánh giá tổng mức độ rủi ro vận hành mà một chi nhánh đang gặp phải từ phản hồi tiêu cực.</p>
+        <div class="formula-box">
+          <code>Risk Score = &sum; (Impact Score của tất cả khía cạnh tiêu cực)</code>
+        </div>
+        <span class="formula-note">* Chi nhánh có Risk Score cao nhất cần được quản lý can thiệp khẩn cấp.</span>
+      </div>
+
+      <div class="formula-card">
+        <h3>Chỉ số Điểm mạnh Chi nhánh (Strength Score)</h3>
+        <p class="formula-desc">Đo lường thế mạnh vận hành của chi nhánh dựa trên các phản hồi tích cực.</p>
+        <div class="formula-box">
+          <code>Strength Score = Lượt khen &times; Avg Positive Sentiment &times; Avg Confidence</code>
+        </div>
+        <span class="formula-note">* Điểm sentiment dương nằm trong khoảng (0, 1.0].</span>
+      </div>
+
+      <div class="formula-card">
+        <h3>Quy tắc Phát hiện Vấn đề Mới nổi (Emerging Issues)</h3>
+        <p class="formula-desc">Thuật toán cảnh báo sớm các sự cố hoặc phàn nàn đang tăng trưởng nhanh chóng.</p>
+        <div class="formula-box">
+          <code>Growth Rate &ge; 50% &nbsp;&amp;&nbsp; Lượt chê tuần này &ge; 5 &nbsp;&amp;&nbsp; Avg Severity &ge; 2.5</code>
+        </div>
+        <span class="formula-note">* Growth Rate = (Số lượt chê tuần này - tuần trước) / Số lượt chê tuần trước.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: AI Copilot -->
+  <section class="intro-section">
+    <div class="section-title-row">
+      <h2>🤖 Trợ Lý Trò Chuyện AI &amp; Bộ 11 Công Cụ Phân Tích</h2>
+    </div>
+    <p class="section-desc">AI Chat Copilot tích hợp các mô hình ngôn ngữ lớn (Gemini, Qwen...) không chỉ trả lời thông thường, mà còn có khả năng tự động kích hoạt 11 công cụ phân tích dữ liệu để giải quyết trực tiếp câu hỏi điều hành:</p>
+    
+    <div class="tools-grid">
+      <div class="tool-item">
+        <span class="tool-icon">📋</span>
+        <div class="tool-info">
+          <h4>get_branch_report</h4>
+          <p>Lập báo cáo tổng hợp chi tiết về thế mạnh, rủi ro, và xu hướng cho một chi nhánh cụ thể.</p>
+        </div>
+      </div>
+      <div class="tool-item">
+        <span class="tool-icon">⚠️</span>
+        <div class="tool-info">
+          <h4>list_critical_complaints</h4>
+          <p>Liệt kê các khiếu nại nghiêm trọng nhất (Impact Score cao) cần ban quản trị xử lý ngay.</p>
+        </div>
+      </div>
+      <div class="tool-item">
+        <span class="tool-icon">📈</span>
+        <div class="tool-info">
+          <h4>get_sentiment_trend</h4>
+          <p>Phân tích biến động chỉ số cảm xúc và số lượng review theo thời gian của toàn hệ thống.</p>
+        </div>
+      </div>
+      <div class="tool-item">
+        <span class="tool-icon">🏢</span>
+        <div class="tool-info">
+          <h4>rank_branches_by_risk</h4>
+          <p>Xếp hạng các chi nhánh từ rủi ro nhất đến an toàn nhất để phân bổ nguồn lực giám sát.</p>
+        </div>
+      </div>
+      <div class="tool-item">
+        <span class="tool-icon">🔍</span>
+        <div class="tool-info">
+          <h4>search_reviews_by_keyword</h4>
+          <p>Tìm kiếm và trích xuất các review gốc dựa trên từ khóa hoặc bằng chứng cụ thể.</p>
+        </div>
+      </div>
+      <div class="tool-item">
+        <span class="tool-icon">🚨</span>
+        <div class="tool-info">
+          <h4>get_emerging_issues</h4>
+          <p>Tìm các vấn đề mới bùng phát có tỷ lệ tăng trưởng phàn nàn vượt ngưỡng 50%.</p>
+        </div>
+      </div>
+      <div class="tool-item">
+        <span class="tool-icon">🍽️</span>
+        <div class="tool-info">
+          <h4>analyze_food_quality</h4>
+          <p>Đi sâu phân tích các khía cạnh liên quan tới hương vị, độ tươi sạch, nhiệt độ món ăn.</p>
+        </div>
+      </div>
+      <div class="tool-item">
+        <span class="tool-icon">⚡</span>
+        <div class="tool-info">
+          <h4>analyze_service_speed</h4>
+          <p>Truy vấn chuyên sâu về tốc độ ra món, thời gian chờ đợi phục vụ của khách hàng.</p>
+        </div>
+      </div>
+      <div class="tool-item">
+        <span class="tool-icon">👥</span>
+        <div class="tool-info">
+          <h4>analyze_staff_attitude</h4>
+          <p>Phân tích thái độ, hành vi ứng xử của nhân viên phục vụ, bảo vệ tại các nhà hàng.</p>
+        </div>
+      </div>
+      <div class="tool-item">
+        <span class="tool-icon">🧹</span>
+        <div class="tool-info">
+          <h4>analyze_hygiene_cleanliness</h4>
+          <p>Đánh giá mức độ vệ sinh của đồ dùng ăn uống, không gian quán, nhà vệ sinh.</p>
+        </div>
+      </div>
+      <div class="tool-item">
+        <span class="tool-icon">📅</span>
+        <div class="tool-info">
+          <h4>export_weekly_report</h4>
+          <p>Tự động xuất báo cáo vận hành tuần hoàn chỉnh ra định dạng Markdown/HTML.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>

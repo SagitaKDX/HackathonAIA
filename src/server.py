@@ -73,7 +73,7 @@ STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
 DATA_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data", "processed", "analyzed_reviews.json"))
 
 # List of static files to serve from src/static
-STATIC_FILES = {"", "/", "/index.html", "/style.css", "/app.js", "/chat.html", "/chat.css", "/chat.js"}
+STATIC_FILES = {"", "/", "/index.html", "/style.css", "/app.js", "/chat.html", "/chat.css", "/chat.js", "/intro.html"}
 
 class DashboardHandler(http.server.SimpleHTTPRequestHandler):
     def guess_type(self, path):

@@ -41,6 +41,10 @@
           <span>AI Chat</span>
           <span class="tab-badge">Qwen</span>
         </button>
+        <button class="nav-tab" id="tab-intro" onclick="switchTab('intro')">
+          <span class="tab-icon">ℹ️</span>
+          <span>Giới thiệu</span>
+        </button>
       </div>
 
       <div class="nav-meta">
@@ -245,6 +249,13 @@
   <!-- ═══════════════════════════════════════ -->
   <main class="chat-page" id="page-chat" style="display: none;">
     <!-- Content loaded from chat.html -->
+  </main>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- PAGE: Product Introduction (Giới thiệu) -->
+  <!-- ═══════════════════════════════════════ -->
+  <main class="intro-page" id="page-intro" style="display: none;">
+    <!-- Content loaded dynamically from intro.html -->
   </main>
 
   <footer class="footer" id="app-footer">

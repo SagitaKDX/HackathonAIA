@@ -3,6 +3,7 @@
 // ══════════════════════════════════════════
 let currentTab = "dashboard";
 let chatPageLoaded = false;
+let introPageLoaded = false;
 
 /**
  * Switch between Dashboard and Chat tabs.
@@ -14,22 +15,28 @@ async function switchTab(tab) {
 
   const pageDashboard = document.getElementById("page-dashboard");
   const pageChat = document.getElementById("page-chat");
+  const pageIntro = document.getElementById("page-intro");
   const tabDashboard = document.getElementById("tab-dashboard");
   const tabChat = document.getElementById("tab-chat");
+  const tabIntro = document.getElementById("tab-intro");
   const footer = document.getElementById("app-footer");
 
   if (tab === "dashboard") {
     pageDashboard.style.display = "";
     pageChat.style.display = "none";
+    if (pageIntro) pageIntro.style.display = "none";
     tabDashboard.classList.add("active");
     tabChat.classList.remove("active");
+    if (tabIntro) tabIntro.classList.remove("active");
     if (footer) footer.style.display = "";
     document.body.classList.remove("chat-active");
   } else if (tab === "chat") {
     pageDashboard.style.display = "none";
     pageChat.style.display = "flex";
+    if (pageIntro) pageIntro.style.display = "none";
     tabDashboard.classList.remove("active");
     tabChat.classList.add("active");
+    if (tabIntro) tabIntro.classList.remove("active");
     if (footer) footer.style.display = "none";
     document.body.classList.add("chat-active");
 
@@ -59,6 +66,31 @@ async function switchTab(tab) {
       const chatInput = document.getElementById("chat-input");
       if (chatInput) chatInput.focus();
     }, 100);
+  } else if (tab === "intro") {
+    pageDashboard.style.display = "none";
+    pageChat.style.display = "none";
+    if (pageIntro) pageIntro.style.display = "block";
+    tabDashboard.classList.remove("active");
+    tabChat.classList.remove("active");
+    if (tabIntro) tabIntro.classList.add("active");
+    if (footer) footer.style.display = "";
+    document.body.classList.remove("chat-active");
+
+    // Load intro.html on first visit
+    if (!introPageLoaded && pageIntro) {
+      try {
+        const res = await fetch("intro.html");
+        if (res.ok) {
+          const html = await res.text();
+          pageIntro.innerHTML = html;
+          introPageLoaded = true;
+        } else {
+          pageIntro.innerHTML = '<div class="error-state">Không thể tải trang Giới thiệu.</div>';
+        }
+      } catch (e) {
+        pageIntro.innerHTML = `<div class="error-state">Lỗi tải trang Giới thiệu: ${e.message}</div>`;
+      }
+    }
   }
 }
 
