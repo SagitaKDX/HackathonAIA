@@ -24,12 +24,14 @@ async function switchTab(tab) {
     tabDashboard.classList.add("active");
     tabChat.classList.remove("active");
     if (footer) footer.style.display = "";
+    document.body.classList.remove("chat-active");
   } else if (tab === "chat") {
     pageDashboard.style.display = "none";
     pageChat.style.display = "flex";
     tabDashboard.classList.remove("active");
     tabChat.classList.add("active");
     if (footer) footer.style.display = "none";
+    document.body.classList.add("chat-active");
 
     // Load chat.html on first visit
     if (!chatPageLoaded) {

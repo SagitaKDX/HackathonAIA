@@ -56,6 +56,11 @@
 }
 
 /* Chat Page Layout */
+body.chat-active {
+  height: 100vh;
+  overflow: hidden;
+}
+
 .chat-page {
   flex: 1;
   display: flex;
@@ -64,7 +69,7 @@
   width: 100%;
   margin: 0 auto;
   padding: 1.5rem 2rem;
-  height: calc(100vh - 80px);
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -528,7 +533,6 @@
 @media (max-width: 768px) {
   .chat-page {
     padding: 0.75rem;
-    height: calc(100vh - 70px);
   }
 
   .chat-container {
