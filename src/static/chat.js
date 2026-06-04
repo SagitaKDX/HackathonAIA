@@ -73,6 +73,47 @@ function initChat() {
     });
   }
 
+  // Settings Modal controls
+  const settingsBtn = document.getElementById("chat-settings-btn");
+  const settingsOverlay = document.getElementById("chat-settings-overlay");
+  const settingsClose = document.getElementById("chat-settings-close");
+  const settingsSave = document.getElementById("chat-settings-save");
+  
+  const inputKey = document.getElementById("input-openai-key");
+  const inputModel = document.getElementById("input-openai-model");
+  const inputUrl = document.getElementById("input-openai-url");
+
+  // Load existing values from localStorage
+  if (inputKey) inputKey.value = localStorage.getItem("openai_key") || "";
+  if (inputModel) inputModel.value = localStorage.getItem("openai_model") || "gpt-4o-mini";
+  if (inputUrl) inputUrl.value = localStorage.getItem("openai_url") || "https://api.openai.com/v1";
+
+  if (settingsBtn && settingsOverlay) {
+    settingsBtn.addEventListener("click", () => {
+      settingsOverlay.style.display = "flex";
+    });
+  }
+
+  if (settingsClose && settingsOverlay) {
+    settingsClose.addEventListener("click", () => {
+      settingsOverlay.style.display = "none";
+    });
+  }
+
+  if (settingsSave && settingsOverlay) {
+    settingsSave.addEventListener("click", () => {
+      localStorage.setItem("openai_key", inputKey ? inputKey.value.trim() : "");
+      localStorage.setItem("openai_model", inputModel ? inputModel.value.trim() : "gpt-4o-mini");
+      localStorage.setItem("openai_url", inputUrl ? inputUrl.value.trim() : "https://api.openai.com/v1");
+      settingsOverlay.style.display = "none";
+      
+      // Update label if cloud selected
+      if (providerSelect && providerSelect.value === "openai" && modelStatus) {
+        modelStatus.textContent = `${localStorage.getItem("openai_model") || "gpt-4o-mini"} · OpenAI API`;
+      }
+    });
+  }
+
   // Suggested prompt chips
   const chips = document.querySelectorAll(".chat-suggestion-chip");
   chips.forEach((chip) => {
@@ -123,6 +164,10 @@ async function sendChatMessage() {
   const providerSelectElem = document.getElementById("chat-provider-select");
   const provider = providerSelectElem ? providerSelectElem.value : "ollama";
 
+  const openai_key = localStorage.getItem("openai_key") || "";
+  const openai_model = localStorage.getItem("openai_model") || "gpt-4o-mini";
+  const openai_url = localStorage.getItem("openai_url") || "https://api.openai.com/v1";
+
   try {
     const response = await fetch(API_CHAT, {
       method: "POST",
@@ -130,7 +175,10 @@ async function sendChatMessage() {
       body: JSON.stringify({
         message: message,
         history: chatHistory.slice(0, -1), // Exclude current message (already sent in body)
-        provider: provider
+        provider: provider,
+        openai_key: openai_key,
+        openai_model: openai_model,
+        openai_url: openai_url
       }),
     });
 

@@ -250,14 +250,18 @@ Nguyên tắc nghiêm ngặt (Guardrails):
 """
 
 
-def call_llm(messages, tools=None, stream=False, provider=None):
+def call_llm(messages, tools=None, stream=False, provider=None, openai_key=None, openai_model=None, openai_url=None):
     """Make an HTTP POST request to the configured LLM provider (Ollama or OpenAI)."""
     selected_provider = provider if provider else LLM_PROVIDER
     if selected_provider == "openai":
-        if not OPENAI_API_KEY:
-            raise ValueError("OPENAI_API_KEY chưa được cấu hình. Vui lòng thiết lập biến môi trường này khi chạy server.")
+        key = openai_key if openai_key else OPENAI_API_KEY
+        model = openai_model if openai_model else OPENAI_MODEL
+        url = openai_url if openai_url else OPENAI_API_URL
+        if not key:
+            raise ValueError("OPENAI_API_KEY chưa được cấu hình. Vui lòng nhấn nút cài đặt ⚙️ trên UI để nhập API Key.")
+            
         payload = {
-            "model": OPENAI_MODEL,
+            "model": model,
             "messages": messages,
             "stream": stream,
             "temperature": OLLAMA_TEMPERATURE
@@ -266,11 +270,11 @@ def call_llm(messages, tools=None, stream=False, provider=None):
             payload["tools"] = tools
             
         req = urllib.request.Request(
-            f"{OPENAI_API_URL}/chat/completions",
+            f"{url}/chat/completions",
             data=json.dumps(payload).encode("utf-8"),
             headers={
                 "Content-Type": "application/json",
-                "Authorization": f"Bearer {OPENAI_API_KEY}"
+                "Authorization": f"Bearer {key}"
             },
             method="POST"
         )
@@ -361,11 +365,11 @@ def is_conversational_query(message):
     return False
 
 
-def _stream_final_response(handler, messages, provider=None):
+def _stream_final_response(handler, messages, provider=None, openai_key=None, openai_model=None, openai_url=None):
     """Stream final text tokens from LLM to the browser."""
     selected_provider = provider if provider else LLM_PROVIDER
     try:
-        with call_llm(messages, stream=True, provider=selected_provider) as resp:
+        with call_llm(messages, stream=True, provider=selected_provider, openai_key=openai_key, openai_model=openai_model, openai_url=openai_url) as resp:
             for line_bytes in resp:
                 line = line_bytes.decode("utf-8").strip()
                 if not line:
@@ -431,6 +435,10 @@ def handle_chat_request(handler):
     if provider not in ["ollama", "openai"]:
         provider = LLM_PROVIDER
 
+    openai_key = payload.get("openai_key", "").strip()
+    openai_model = payload.get("openai_model", "").strip()
+    openai_url = payload.get("openai_url", "").strip()
+
     if not user_message:
         _send_json(handler, {"error": "Message is required"}, status=400)
         return
@@ -458,7 +466,7 @@ def handle_chat_request(handler):
 
     # ── Optimize simple conversational queries ──
     if is_conversational_query(user_message):
-        _stream_final_response(handler, messages, provider=provider)
+        _stream_final_response(handler, messages, provider=provider, openai_key=openai_key, openai_model=openai_model, openai_url=openai_url)
         return
 
     # ── Tool calling loop (max 5 iterations) ──
@@ -466,7 +474,7 @@ def handle_chat_request(handler):
     
     for loop_idx in range(5):
         # Call LLM non-streaming to inspect if it wants to run tool calls
-        response = call_llm(messages, tools=TOOLS_SPEC, stream=False, provider=provider)
+        response = call_llm(messages, tools=TOOLS_SPEC, stream=False, provider=provider, openai_key=openai_key, openai_model=openai_model, openai_url=openai_url)
         message = response.get("message", {})
         tool_calls = message.get("tool_calls", [])
 
@@ -521,7 +529,7 @@ def handle_chat_request(handler):
             messages.append(tool_msg)
 
     # ── Final Response Generation (Streaming) ──
-    _stream_final_response(handler, messages, provider=provider)
+    _stream_final_response(handler, messages, provider=provider, openai_key=openai_key, openai_model=openai_model, openai_url=openai_url)
 
 
 def _stream_text_response(handler, text, chunk_size=8, delay_sec=0.001):
