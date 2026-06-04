@@ -522,7 +522,7 @@ def handle_chat_request(handler):
                     pass
 
             # Format trace representation for the chat stream
-            args_str = ", ".join(f"{k}={repr(v)}" for k, v in arguments.items())
+            args_str = ", ".join(f"{k}='{v}'" if isinstance(v, str) else f"{k}={v}" for k, v in arguments.items())
             status_token = f"\n\n> 🔍 *InsightAgent đang chạy công cụ:* `{name}({args_str})`...\n\n"
             _send_sse(handler, {"token": status_token, "done": False})
 

@@ -104,9 +104,25 @@ Schema:
 {reviews_text}
 """
 
+def load_dotenv():
+    paths = [".env", os.path.join(os.path.dirname(__file__), "..", ".env")]
+    for path in paths:
+        if os.path.exists(path):
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    for line in f:
+                        line = line.strip()
+                        if line and not line.startswith("#") and "=" in line:
+                            key, val = line.split("=", 1)
+                            os.environ[key.strip()] = val.strip().strip('"').strip("'")
+                break
+            except Exception:
+                pass
+
 class GeminiClientManager:
     """Manages rotation of Gemini API keys from a file to avoid rate limits."""
     def __init__(self, key_file="apikey.txt"):
+        load_dotenv()
         self.keys = []
         try:
             with open(key_file, "r") as f:
