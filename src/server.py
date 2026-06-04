@@ -7,6 +7,25 @@ import urllib.parse
 from datetime import datetime, timedelta
 import collections
 
+# Dependency-free .env loader
+def load_dotenv(dotenv_path=".env"):
+    if os.path.exists(dotenv_path):
+        with open(dotenv_path, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                if "=" in line:
+                    key, val = line.split("=", 1)
+                    key = key.strip()
+                    val = val.strip().strip("'\"")
+                    os.environ[key] = val
+
+# Load .env file from the workspace root
+base_dir = os.path.dirname(os.path.abspath(__file__))
+workspace_dir = os.path.dirname(base_dir)
+load_dotenv(os.path.join(workspace_dir, ".env"))
+
 from chat_handler import handle_chat_request, OLLAMA_MODEL, OLLAMA_URL
 
 PORT = 8000
