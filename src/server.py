@@ -15,31 +15,26 @@ import urllib.parse
 from datetime import datetime, timedelta
 import collections
 
-def load_dotenv():
-    paths = [".env", os.path.join(os.path.dirname(__file__), "..", ".env")]
-    for path in paths:
-        if os.path.exists(path):
-            try:
-                with open(path, "r", encoding="utf-8") as f:
-                    for line in f:
-                        line = line.strip()
-                        if line and not line.startswith("#") and "=" in line:
-                            key, val = line.split("=", 1)
-                            os.environ[key.strip()] = val.strip().strip('"').strip("'")
-                break
-            except Exception:
-                pass
+# Dependency-free .env loader
+def load_dotenv(dotenv_path=".env"):
+    if os.path.exists(dotenv_path):
+        with open(dotenv_path, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                if "=" in line:
+                    key, val = line.split("=", 1)
+                    key = key.strip()
+                    val = val.strip().strip("'\"")
+                    os.environ[key] = val
 
-load_dotenv()
+# Load .env file from the workspace root
+base_dir = os.path.dirname(os.path.abspath(__file__))
+workspace_dir = os.path.dirname(base_dir)
+load_dotenv(os.path.join(workspace_dir, ".env"))
 
-def handle_chat_request_wrapper(handler):
-    load_dotenv()
-    provider = os.environ.get("MODEL_PROVIDER", "gemini").lower()
-    if provider in ["gemini", "openai", "chatgpt"]:
-        from chat_handler_api import handle_chat_request
-    else:
-        from chat_handler import handle_chat_request
-    return handle_chat_request(handler)
+from chat_handler import handle_chat_request, OLLAMA_MODEL, OLLAMA_URL
 
 PORT = 8000
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
@@ -395,8 +390,8 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
 
 
 def run_server():
-    socketserver.TCPServer.allow_reuse_address = True
-    with socketserver.TCPServer(("", PORT), DashboardHandler) as httpd:
+    socketserver.ThreadingTCPServer.allow_reuse_address = True
+    with socketserver.ThreadingTCPServer(("", PORT), DashboardHandler) as httpd:
         print(f"CRM Dashboard Web Server starting at http://localhost:{PORT}")
         provider = os.environ.get("MODEL_PROVIDER", "gemini").lower()
         if provider == "gemini":

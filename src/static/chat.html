@@ -1,6 +1,6 @@
 <!-- Chat Page Content (loaded dynamically by app.js) -->
 <div class="chat-container">
-  
+
   <!-- Chat Header -->
   <div class="chat-header-bar">
     <div class="chat-header-left">
@@ -13,7 +13,12 @@
         </span>
       </div>
     </div>
-    <div class="chat-header-right">
+    <div class="chat-header-right" style="display: flex; gap: 0.75rem; align-items: center;">
+      <select id="chat-provider-select" class="chat-provider-select"
+        style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); color: #ffffff; padding: 0.4rem 0.75rem; border-radius: 0.5rem; outline: none; font-size: 0.78rem; font-family: var(--font-family); cursor: pointer; transition: var(--transition);">
+        <option value="ollama">Local Model (Ollama)</option>
+        <option value="openai">Cloud Model (OpenAI)</option>
+      </select>
       <button class="chat-clear-btn" id="chat-clear-btn" title="Xóa lịch sử chat">
         🗑️ Xóa chat
       </button>
@@ -22,13 +27,14 @@
 
   <!-- Chat Messages Area -->
   <div class="chat-messages" id="chat-messages">
-    
+
     <!-- Welcome State -->
     <div class="chat-welcome" id="chat-welcome">
       <div class="chat-welcome-icon">🧠</div>
       <h3>Xin chào! Tôi là InsightAgent AI</h3>
-      <p>Tôi có thể phân tích dữ liệu đánh giá khách hàng của bạn. Hỏi tôi bất kỳ điều gì về reviews, chi nhánh, sentiment, hoặc xu hướng.</p>
-      
+      <p>Tôi có thể phân tích dữ liệu đánh giá khách hàng của bạn. Hỏi tôi bất kỳ điều gì về reviews, chi nhánh,
+        sentiment, hoặc xu hướng.</p>
+
       <!-- Suggested Prompts -->
       <div class="chat-suggestions" id="chat-suggestions">
         <button class="chat-suggestion-chip" data-prompt="Chi nhánh nào có rủi ro cao nhất và tại sao?">
@@ -37,13 +43,16 @@
         <button class="chat-suggestion-chip" data-prompt="Tóm tắt top 5 vấn đề khiếu nại lớn nhất hiện tại">
           📋 Top 5 khiếu nại
         </button>
-        <button class="chat-suggestion-chip" data-prompt="So sánh sentiment giữa các chi nhánh, chi nhánh nào đang làm tốt nhất?">
+        <button class="chat-suggestion-chip"
+          data-prompt="So sánh sentiment giữa các chi nhánh, chi nhánh nào đang làm tốt nhất?">
           📊 So sánh chi nhánh
         </button>
-        <button class="chat-suggestion-chip" data-prompt="Phân tích xu hướng đánh giá về chất lượng đồ ăn trong tuần qua">
+        <button class="chat-suggestion-chip"
+          data-prompt="Phân tích xu hướng đánh giá về chất lượng đồ ăn trong tuần qua">
           🍜 Xu hướng đồ ăn
         </button>
-        <button class="chat-suggestion-chip" data-prompt="Đề xuất các hành động cải thiện cụ thể cho chi nhánh có nhiều phàn nàn nhất">
+        <button class="chat-suggestion-chip"
+          data-prompt="Đề xuất các hành động cải thiện cụ thể cho chi nhánh có nhiều phàn nàn nhất">
           💡 Đề xuất cải thiện
         </button>
         <button class="chat-suggestion-chip" data-prompt="Tổng quan nhanh về tình hình đánh giá khách hàng">
@@ -57,14 +66,11 @@
   <!-- Chat Input Bar -->
   <div class="chat-input-bar">
     <div class="chat-input-wrapper">
-      <textarea 
-        id="chat-input" 
-        placeholder="Hỏi về dữ liệu đánh giá khách hàng..." 
-        rows="1"
-        maxlength="2000"
-      ></textarea>
+      <textarea id="chat-input" placeholder="Hỏi về dữ liệu đánh giá khách hàng..." rows="1"
+        maxlength="2000"></textarea>
       <button class="chat-send-btn" id="chat-send-btn" title="Gửi (Enter)">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
           <line x1="22" y1="2" x2="11" y2="13"></line>
           <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
         </svg>
@@ -72,6 +78,33 @@
     </div>
     <div class="chat-input-hint">
       <span>Enter để gửi · Shift+Enter để xuống dòng</span>
+    </div>
+  </div>
+
+  <!-- Settings Panel Overlay -->
+  <div class="chat-settings-overlay" id="chat-settings-overlay" style="display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(11, 15, 25, 0.85); backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center;">
+    <div class="chat-settings-modal" style="background: #111827; border: 1px solid var(--card-border); border-radius: 1rem; width: 90%; max-width: 450px; padding: 1.75rem; display: flex; flex-direction: column; gap: 1.25rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); animation: fadeInUp 0.3s ease-out;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="color: #ffffff; margin: 0; font-size: 1.1rem; font-weight: 700;">⚙️ Cấu hình OpenAI API</h3>
+        <button id="chat-settings-close" style="background: transparent; border: none; color: var(--text-secondary); font-size: 1.25rem; cursor: pointer;">&times;</button>
+      </div>
+      
+      <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+        <label style="font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">OpenAI API Key</label>
+        <input type="password" id="input-openai-key" placeholder="Nhập API Key (sk-proj-...)" style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); color: #ffffff; padding: 0.6rem 0.85rem; border-radius: 0.5rem; outline: none; font-size: 0.85rem; font-family: monospace;">
+      </div>
+      
+      <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+        <label style="font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">Model Name</label>
+        <input type="text" id="input-openai-model" placeholder="gpt-4o-mini" style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); color: #ffffff; padding: 0.6rem 0.85rem; border-radius: 0.5rem; outline: none; font-size: 0.85rem;">
+      </div>
+      
+      <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+        <label style="font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">API Base URL</label>
+        <input type="text" id="input-openai-url" placeholder="https://api.openai.com/v1" style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); color: #ffffff; padding: 0.6rem 0.85rem; border-radius: 0.5rem; outline: none; font-size: 0.85rem;">
+      </div>
+      
+      <button id="chat-settings-save" style="background: var(--accent-color); color: #000000; font-weight: 600; border: none; padding: 0.65rem; border-radius: 0.5rem; cursor: pointer; font-family: var(--font-family); font-size: 0.85rem; transition: var(--transition); text-align: center;">Lưu cấu hình</button>
     </div>
   </div>
 

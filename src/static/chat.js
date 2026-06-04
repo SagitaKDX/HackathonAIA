@@ -59,6 +59,61 @@ function initChat() {
     clearBtn.addEventListener("click", clearChat);
   }
 
+  // Provider Select listener
+  const providerSelect = document.getElementById("chat-provider-select");
+  const modelStatus = document.getElementById("chat-model-status");
+  if (providerSelect && modelStatus) {
+    providerSelect.addEventListener("change", (e) => {
+      const provider = e.target.value;
+      if (provider === "openai") {
+        modelStatus.textContent = "GPT-4o-mini · OpenAI API";
+      } else {
+        modelStatus.textContent = "Qwen 2.5 · Ollama Local";
+      }
+    });
+  }
+
+  // Settings Modal controls
+  const settingsBtn = document.getElementById("chat-settings-btn");
+  const settingsOverlay = document.getElementById("chat-settings-overlay");
+  const settingsClose = document.getElementById("chat-settings-close");
+  const settingsSave = document.getElementById("chat-settings-save");
+  
+  const inputKey = document.getElementById("input-openai-key");
+  const inputModel = document.getElementById("input-openai-model");
+  const inputUrl = document.getElementById("input-openai-url");
+
+  // Load existing values from localStorage
+  if (inputKey) inputKey.value = localStorage.getItem("openai_key") || "";
+  if (inputModel) inputModel.value = localStorage.getItem("openai_model") || "gpt-4o-mini";
+  if (inputUrl) inputUrl.value = localStorage.getItem("openai_url") || "https://api.openai.com/v1";
+
+  if (settingsBtn && settingsOverlay) {
+    settingsBtn.addEventListener("click", () => {
+      settingsOverlay.style.display = "flex";
+    });
+  }
+
+  if (settingsClose && settingsOverlay) {
+    settingsClose.addEventListener("click", () => {
+      settingsOverlay.style.display = "none";
+    });
+  }
+
+  if (settingsSave && settingsOverlay) {
+    settingsSave.addEventListener("click", () => {
+      localStorage.setItem("openai_key", inputKey ? inputKey.value.trim() : "");
+      localStorage.setItem("openai_model", inputModel ? inputModel.value.trim() : "gpt-4o-mini");
+      localStorage.setItem("openai_url", inputUrl ? inputUrl.value.trim() : "https://api.openai.com/v1");
+      settingsOverlay.style.display = "none";
+      
+      // Update label if cloud selected
+      if (providerSelect && providerSelect.value === "openai" && modelStatus) {
+        modelStatus.textContent = `${localStorage.getItem("openai_model") || "gpt-4o-mini"} · OpenAI API`;
+      }
+    });
+  }
+
   // Suggested prompt chips
   const chips = document.querySelectorAll(".chat-suggestion-chip");
   chips.forEach((chip) => {
@@ -106,13 +161,24 @@ async function sendChatMessage() {
   const aiMessageEl = createAIMessageElement();
   const bubbleEl = aiMessageEl.querySelector(".chat-msg-bubble");
 
+  const providerSelectElem = document.getElementById("chat-provider-select");
+  const provider = providerSelectElem ? providerSelectElem.value : "ollama";
+
+  const openai_key = localStorage.getItem("openai_key") || "";
+  const openai_model = localStorage.getItem("openai_model") || "gpt-4o-mini";
+  const openai_url = localStorage.getItem("openai_url") || "https://api.openai.com/v1";
+
   try {
     const response = await fetch(API_CHAT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         message: message,
-        history: chatHistory.slice(0, -1) // Exclude current message (already sent in body)
+        history: chatHistory.slice(0, -1), // Exclude current message (already sent in body)
+        provider: provider,
+        openai_key: openai_key,
+        openai_model: openai_model,
+        openai_url: openai_url
       }),
     });
 
@@ -134,8 +200,8 @@ async function sendChatMessage() {
     const decoder = new TextDecoder();
     let buffer = "";
 
-    let streamDone = false;
-    while (!streamDone) {
+    let isStreamDone = false;
+    while (!isStreamDone) {
       const { done, value } = await reader.read();
       if (done) break;
 
@@ -156,7 +222,7 @@ async function sendChatMessage() {
           if (data.error) {
             bubbleEl.innerHTML = `<span class="chat-msg-error">${escapeHtml(data.error)}</span>`;
             bubbleEl.classList.add("chat-msg-error");
-            streamDone = true;
+            isStreamDone = true;
             break;
           }
 
@@ -170,7 +236,7 @@ async function sendChatMessage() {
           if (data.done) {
             // Final render
             renderMarkdown(bubbleEl, fullResponse);
-            streamDone = true;
+            isStreamDone = true;
             break;
           }
         } catch (parseErr) {

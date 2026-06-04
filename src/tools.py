@@ -115,8 +115,36 @@ def get_reviews(branch_id=None, start_date=None, end_date=None, sentiment=None, 
     for r in records:
         # Branch
         if branch_id and branch_id != "all":
-            if r.get("branch_id") != branch_id and r.get("branch_name") != branch_id:
-                continue
+            b_id_lower = str(branch_id).lower().strip()
+            r_id = str(r.get("branch_id", "")).lower().strip()
+            r_name = str(r.get("branch_name", "")).lower().strip()
+            if r_id != b_id_lower and r_name != b_id_lower:
+                def _strip_accents(s):
+                    accents = {
+                        "áàảãạăắằẳẵặâấầẩẫậ": "a",
+                        "éèẻẽẹêếềểễệ": "e",
+                        "íìỉĩị": "i",
+                        "óòỏõọôốồổỗộơớờởỡợ": "o",
+                        "úùủũụưứừửữự": "u",
+                        "ýỳỷỹỵ": "y",
+                        "đ": "d"
+                    }
+                    s_new = ""
+                    for char in s:
+                        matched = False
+                        for group, replacement in accents.items():
+                            if char in group:
+                                s_new += replacement
+                                matched = True
+                                break
+                        if not matched:
+                            s_new += char
+                    return s_new
+                b_clean = _strip_accents(b_id_lower).replace("branch_", "").replace("_", "").replace(" ", "")
+                r_name_clean = _strip_accents(r_name).replace("branch_", "").replace("_", "").replace(" ", "")
+                r_id_clean = _strip_accents(r_id).replace("branch_", "").replace("_", "").replace(" ", "")
+                if r_id_clean != b_clean and r_name_clean != b_clean:
+                    continue
                 
         # Date
         r_date = parse_datetime(r.get("created_at"))
@@ -145,18 +173,18 @@ def get_reviews(branch_id=None, start_date=None, end_date=None, sentiment=None, 
             if r.get("subcategory") != subcategory:
                 continue
                 
+        created_date = r.get("created_at", "")[:10] if r.get("created_at") else ""
         filtered.append({
-            "review_id": r.get("review_id"),
-            "branch_name": r.get("branch_name"),
+            "branch": r.get("branch_name"),
             "sentiment": r.get("sentiment"),
-            "main_category": r.get("main_category"),
-            "subcategory": r.get("subcategory"),
-            "severity": r.get("severity"),
+            "category": r.get("main_category"),
+            "sub": r.get("subcategory"),
+            "sev": r.get("severity"),
             "evidence": r.get("evidence"),
-            "created_at": r.get("created_at")
+            "date": created_date
         })
         
-    filtered.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+    filtered.sort(key=lambda x: x.get("date", ""), reverse=True)
     return filtered[:limit]
 
 
@@ -185,8 +213,36 @@ def count_reviews(branch_id=None, start_date=None, end_date=None, period=None, s
     for r in records:
         # Branch
         if branch_id and branch_id != "all":
-            if r.get("branch_id") != branch_id and r.get("branch_name") != branch_id:
-                continue
+            b_id_lower = str(branch_id).lower().strip()
+            r_id = str(r.get("branch_id", "")).lower().strip()
+            r_name = str(r.get("branch_name", "")).lower().strip()
+            if r_id != b_id_lower and r_name != b_id_lower:
+                def _strip_accents(s):
+                    accents = {
+                        "áàảãạăắằẳẵặâấầẩẫậ": "a",
+                        "éèẻẽẹêếềểễệ": "e",
+                        "íìỉĩị": "i",
+                        "óòỏõọôốồổỗộơớờởỡợ": "o",
+                        "úùủũụưứừửữự": "u",
+                        "ýỳỷỹỵ": "y",
+                        "đ": "d"
+                    }
+                    s_new = ""
+                    for char in s:
+                        matched = False
+                        for group, replacement in accents.items():
+                            if char in group:
+                                s_new += replacement
+                                matched = True
+                                break
+                        if not matched:
+                            s_new += char
+                    return s_new
+                b_clean = _strip_accents(b_id_lower).replace("branch_", "").replace("_", "").replace(" ", "")
+                r_name_clean = _strip_accents(r_name).replace("branch_", "").replace("_", "").replace(" ", "")
+                r_id_clean = _strip_accents(r_id).replace("branch_", "").replace("_", "").replace(" ", "")
+                if r_id_clean != b_clean and r_name_clean != b_clean:
+                    continue
                 
         # Date
         r_date = parse_datetime(r.get("created_at"))
@@ -255,15 +311,15 @@ def search_reviews(keyword, branch_id=None, start_date=None, end_date=None, limi
         evidence = r.get("evidence", "") or ""
         
         if kw_lower in content.lower() or kw_lower in evidence.lower():
+            created_date = r.get("created_at", "")[:10] if r.get("created_at") else ""
             filtered.append({
-                "review_id": r.get("review_id"),
-                "branch_name": r.get("branch_name"),
+                "branch": r.get("branch_name"),
                 "evidence": r.get("evidence"),
                 "sentiment": r.get("sentiment"),
-                "created_at": r.get("created_at")
+                "date": created_date
             })
             
-    filtered.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+    filtered.sort(key=lambda x: x.get("date", ""), reverse=True)
     return filtered[:limit]
 
 
