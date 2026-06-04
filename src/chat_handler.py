@@ -368,7 +368,10 @@ def handle_chat_request(handler):
         tool_calls = message.get("tool_calls", [])
 
         if not tool_calls:
-            # No tool calls generated in this turn, we are ready to write final response
+            final_text = message.get("content", "")
+            if final_text:
+                _stream_text_response(handler, final_text)
+                return
             break
 
         has_called_tools = True
@@ -413,6 +416,21 @@ def handle_chat_request(handler):
 
     # ── Final Response Generation (Streaming) ──
     _stream_final_response(handler, messages)
+
+
+def _stream_text_response(handler, text, chunk_size=8, delay_sec=0.001):
+    """
+    Stream a pre-generated string back to the browser via SSE,
+    simulating active generation with high speed.
+    """
+    import time
+    i = 0
+    while i < len(text):
+        chunk = text[i:i+chunk_size]
+        _send_sse(handler, {"token": chunk, "done": False})
+        i += chunk_size
+        time.sleep(delay_sec)
+    _send_sse(handler, {"token": "", "done": True})
 
 
 # ──────────────────────────────────
