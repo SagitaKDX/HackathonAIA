@@ -19,7 +19,7 @@ try:
 except ImportError:
     pass
 
-from chat_handler import SYSTEM_PROMPT, TOOLS_SPEC, TOOL_MAPPING, is_conversational_query
+from chat_handler import SYSTEM_PROMPT, TOOLS_SPEC, TOOL_MAPPING, is_conversational_query, is_prompt_injection, is_out_of_scope
 
 # Load .env file
 def load_dotenv():
@@ -199,6 +199,21 @@ def handle_chat_request(handler):
     handler.send_header("Connection", "keep-alive")
     handler.send_header("Access-Control-Allow-Origin", "*")
     handler.end_headers()
+
+    # ── Security Guardrails ──
+    if is_prompt_injection(user_message):
+        _send_sse(handler, {
+            "token": "⚠️ **Cảnh báo bảo mật:** Phát hiện hành vi có dấu hiệu tấn công Prompt Injection (cố gắng thay đổi, bỏ qua hoặc đánh cắp chỉ dẫn hệ thống). Câu hỏi này đã bị chặn tự động để bảo vệ hệ thống.",
+            "done": True
+        })
+        return
+
+    if is_out_of_scope(user_message):
+        _send_sse(handler, {
+            "token": "⚠️ **Hệ thống cảnh báo:** Câu hỏi của bạn nằm ngoài phạm vi phân tích dữ liệu đánh giá nhà hàng. InsightAgent chỉ hỗ trợ các câu hỏi liên quan đến phản hồi của khách hàng, chất lượng món ăn, dịch vụ và hiệu quả hoạt động của các chi nhánh. Vui lòng đặt câu hỏi phù hợp.",
+            "done": True
+        })
+        return
 
     # Make sure env is fresh
     load_dotenv()

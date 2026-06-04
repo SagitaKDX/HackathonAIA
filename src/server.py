@@ -36,6 +36,38 @@ load_dotenv(os.path.join(workspace_dir, ".env"))
 
 from chat_handler import handle_chat_request, OLLAMA_MODEL, OLLAMA_URL
 
+def handle_chat_request_wrapper(handler):
+    import io
+    # Read the request body
+    content_length = int(handler.headers.get("Content-Length", 0))
+    body = handler.rfile.read(content_length)
+    
+    # Restore rfile so that the imported handle_chat_request can read it
+    handler.rfile = io.BytesIO(body)
+    
+    # Parse provider from the body
+    provider = ""
+    try:
+        payload = json.loads(body.decode("utf-8"))
+        provider = payload.get("provider", "").strip().lower()
+    except Exception:
+        pass
+        
+    # If not explicitly specified by client, check env
+    if not provider or provider not in ["ollama", "openai"]:
+        provider = os.environ.get("MODEL_PROVIDER", "").lower()
+        if not provider:
+            provider = os.environ.get("LLM_PROVIDER", "ollama").lower()
+            
+    # Route accordingly
+    if provider == "gemini":
+        from chat_handler_api import handle_chat_request
+    else:
+        from chat_handler import handle_chat_request
+        
+    return handle_chat_request(handler)
+
+
 PORT = 8000
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
 DATA_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data", "processed", "analyzed_reviews.json"))
